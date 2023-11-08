@@ -11,6 +11,7 @@ const AddNewTodo = () => {
             newTitleForTodoList.current.value = ''
         }
     }
+
     return (
         <div>
             <input ref={newTitleForTodoList}/>

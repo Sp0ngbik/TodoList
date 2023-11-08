@@ -13,5 +13,3 @@ export const store = legacy_createStore(rootReducer, applyMiddleware(thunk));
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = ThunkDispatch<RootState, unknown, T_MainAppAction>
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, T_MainAppAction>
-// @ts-ignore
-window.store = store;

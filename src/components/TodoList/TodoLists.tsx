@@ -42,7 +42,6 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo(({title, todoLis
         }
     }, [todoListId, dispatch])
 
-
     return <div className={style.todoListWrapper}>
         <div className={style.todoList}>
             <EditableSpan prevTitle={title} callbackFunc={editTodoListTitle}/>
@@ -54,7 +53,10 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo(({title, todoLis
                 <button onClick={addTask}>+</button>
             </div>
             {tasksData && tasksData.map((el) => (
-                <Task key={el.id} id={el.id} title={el.title} todoListId={todoListId} status={el.status}
+                <Task key={el.id} id={el.id}
+                      title={el.title}
+                      todoListId={todoListId}
+                      status={el.status}
                 />
             ))}
         </div>

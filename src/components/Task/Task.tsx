@@ -14,6 +14,7 @@ type T_Task = {
 
 const Task: FC<T_Task> = ({title, id, todoListId, status}) => {
     const dispatch = useAppDispatch()
+
     const deleteTask = useCallback((taskId: string) => {
         dispatch(deleteTaskTK(todoListId, taskId))
     }, [todoListId, dispatch])
