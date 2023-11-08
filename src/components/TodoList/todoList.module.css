@@ -1,0 +1,7 @@
+.todoListWrapper {
+    display: grid;
+}
+
+.todoList {
+    display: flex;
+}
