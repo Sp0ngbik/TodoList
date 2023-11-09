@@ -13,12 +13,13 @@ type T_GetTL = ReturnType<typeof getTodoListAC>
 type T_DeleteTL = ReturnType<typeof deleteTodoListAC>
 type T_CreateTL = ReturnType<typeof addNewTodoListAC>
 type T_ChangeTitleTL = ReturnType<typeof editTodoListTitleAC>
-export type T_MainTL = T_GetTL | T_DeleteTL | T_CreateTL | T_ChangeTitleTL
+type T_ChangeFilterTL = ReturnType<typeof changeTodoListFilterAC>
+export type T_MainTL = T_GetTL | T_DeleteTL | T_CreateTL | T_ChangeTitleTL | T_ChangeFilterTL
 
 export const todoList_reducer = (state = initialState, action: T_MainTL) => {
     switch (action.type) {
         case "GET_TODOLIST": {
-            return action.tlData.data.map(el => el)
+            return action.tlData.data.map(el => ({...el, filter: 'all'}))
         }
         case "DELETE_TODOLIST": {
             return state.filter(el => el.id !== action.todoListId)
@@ -28,6 +29,9 @@ export const todoList_reducer = (state = initialState, action: T_MainTL) => {
         }
         case "CHANGE_TODOLIST_TITLE": {
             return state.map(el => el.id === action.todoListId ? {...el, title: action.newTitleTL} : el)
+        }
+        case "CHANGE_TODOLIST_FILTER": {
+            return state.map(el => el.id === action.todoListId ? {...el, filter: action.filter} : el)
         }
         default:
             return state
@@ -49,6 +53,10 @@ const addNewTodoListAC = (newTL: AxiosResponse<T_TodoListResponse<T_TodoListPost
 
 const editTodoListTitleAC = (todoListId: string, newTitleTL: string) => {
     return {type: 'CHANGE_TODOLIST_TITLE', todoListId, newTitleTL} as const
+}
+
+export const changeTodoListFilterAC = (todoListId: string, filter: T_FilterValues) => {
+    return {type: 'CHANGE_TODOLIST_FILTER', todoListId, filter} as const
 }
 /////ASYNC
 export const getTodoListsTK = (): AppThunk => async (dispatch: AppDispatch) => {

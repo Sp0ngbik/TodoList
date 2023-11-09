@@ -6,7 +6,7 @@ import AddNewTodo from "./components/AddNewTodo/AddNewTodo";
 import {TodoLists} from "./components/TodoList/TodoLists";
 import style from './app.module.css'
 
-export type T_FilterValues = 'all' | 'completed' | 'active'
+export type T_FilterValues = 'all' | 'completed' | 'inProgress'
 
 const AppTodoList = React.memo(() => {
     const dispatch = useAppDispatch()
@@ -20,7 +20,7 @@ const AppTodoList = React.memo(() => {
             <div className={style.allTodosWrapper}>
                 {todoListsData.map(tl => (
                     <div key={tl.id}>
-                        <TodoLists title={tl.title} todoListId={tl.id}  />
+                        <TodoLists title={tl.title} todoListId={tl.id} filter={tl.filter}/>
                     </div>
                 ))}
             </div>

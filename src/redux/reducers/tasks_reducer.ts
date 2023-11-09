@@ -10,6 +10,7 @@ import {
 } from "../../api/task_API";
 import {AxiosResponse} from "axios";
 
+
 export type T_TasksReducer = {
     [todoListId: string]: T_TaskResponseItems[]
 }
@@ -63,6 +64,7 @@ const updateTaskStatusAC = (todoListId: string, taskId: string, status: TasksSta
 const updateTaskTitleAC = (todoListId: string, taskId: string, title: any) => {
     return {type: "UPDATE_TASK_TITLE", todoListId, taskId, title} as const
 }
+
 ///////ASYNC
 export const getTasksTK = (todoListId: string): AppThunk => async (dispatch: AppDispatch) => {
     try {

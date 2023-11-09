@@ -21,11 +21,11 @@ const Task: FC<T_Task> = ({title, id, todoListId, status}) => {
 
     const changeStatus = useCallback((status: TasksStatus) => {
         dispatch(updateTaskFields(todoListId, id, status, title))
-    }, [todoListId, id])
+    }, [todoListId, id, dispatch, title])
 
     const updateTaskTitle = useCallback((title: string) => {
         dispatch(updateTaskTitleTK(todoListId, id, title))
-    }, [todoListId, id])
+    }, [todoListId, id, dispatch])
 
     return (
         <div key={crypto.randomUUID()}>
