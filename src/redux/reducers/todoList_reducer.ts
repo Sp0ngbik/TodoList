@@ -64,6 +64,7 @@ export const getTodoListsTK = (): AppThunk => async (dispatch: AppDispatch) => {
     try {
         const tlData = await todolist_API.getTodoLists()
         dispatch(getTodoListAC(tlData))
+        tlData.data.map(el => dispatch(getTasksTK(el.id)))
     } catch (e) {
         console.log(e)
     }
@@ -73,6 +74,7 @@ export const deleteTodoListTK = (todoListId: string): AppThunk => async (dispatc
     try {
         await todolist_API.deleteTodoList(todoListId)
         dispatch(deleteTodoListAC(todoListId))
+
     } catch (e) {
         console.log(e)
     }

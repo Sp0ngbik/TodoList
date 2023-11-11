@@ -18,8 +18,8 @@ const initialState: T_TasksReducer = {}
 type T_GetTasks = ReturnType<typeof getTasksAC>
 type T_CreateTasks = ReturnType<typeof createTasksAC>
 type T_DeleteTask = ReturnType<typeof deleteTaskAC>
-type T_UpdateTaskTitleAC = ReturnType<typeof updateTaskStatusAC>
 type T_UpdateTaskStatusAC = ReturnType<typeof updateTaskTitleAC>
+type T_UpdateTaskTitleAC = ReturnType<typeof updateTaskStatusAC>
 export type T_MainTasks = T_GetTasks | T_CreateTasks | T_DeleteTask | T_UpdateTaskStatusAC | T_UpdateTaskTitleAC
 
 export const tasks_reducer = (state = initialState, action: T_MainTasks) => {

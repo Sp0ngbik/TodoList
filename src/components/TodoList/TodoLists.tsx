@@ -1,8 +1,8 @@
-import React, {RefObject, useCallback, useEffect, useRef} from "react";
+import React, {RefObject, useCallback, useRef} from "react";
 import style from './todoList.module.css'
 import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import {changeTodoListFilterAC, deleteTodoListTK, editTodoListTitleTK} from "../../redux/reducers/todoList_reducer";
-import {createTasksTK, getTasksTK} from "../../redux/reducers/tasks_reducer";
+import {createTasksTK} from "../../redux/reducers/tasks_reducer";
 import {T_TaskResponseItems, TasksStatus} from "../../api/task_API";
 import Task from "../Task/Task";
 import EditableSpan from "../EdditableSpan/EditableSpan";
@@ -16,13 +16,6 @@ type T_TodoListsProps = {
 
 export const TodoLists: React.FC<T_TodoListsProps> = React.memo(({title, todoListId, filter}) => {
     const dispatch = useAppDispatch()
-    const loadTasks = useCallback(() => {
-        dispatch(getTasksTK(todoListId))
-    }, [todoListId, dispatch])
-    useEffect(() => {
-        loadTasks()
-    }, [loadTasks]);
-
     const tasksData: T_TaskResponseItems[] = useAppSelector(state => state.tasks_reducer[todoListId])
     const newTitle: RefObject<HTMLInputElement> = useRef(null)
     const removeTodoListId = useCallback(() => {
