@@ -7,7 +7,6 @@ export type T_TodoListCreate = {
     order: number
 }
 
-
 export type T_TodoListPost = {
     item: T_TodoListCreate
 }
@@ -17,7 +16,6 @@ export type  T_TodoListResponse<D = {}> = {
     messages: string[],
     data: D
 }
-
 
 const settings = {
     withCredentials: true,

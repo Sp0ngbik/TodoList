@@ -5,3 +5,7 @@
 .todoList {
     display: flex;
 }
+
+.error {
+    border: 1px solid red;
+}

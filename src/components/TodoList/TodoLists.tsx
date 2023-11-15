@@ -1,4 +1,4 @@
-import React, {RefObject, useCallback, useRef} from "react";
+import React, {RefObject, useCallback, useRef, useState} from "react";
 import style from './todoList.module.css'
 import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import {changeTodoListFilterAC, deleteTodoListTK, editTodoListTitleTK} from "../../redux/reducers/todoList_reducer";
@@ -6,7 +6,7 @@ import {createTasksTK} from "../../redux/reducers/tasks_reducer";
 import {T_TaskResponseItems, TasksStatus} from "../../api/task_API";
 import Task from "../Task/Task";
 import EditableSpan from "../EdditableSpan/EditableSpan";
-import {T_FilterValues} from "../../AppTodoList";
+import {T_FilterValues} from "../../app/AppTodoList";
 
 type T_TodoListsProps = {
     title: string,
@@ -18,6 +18,7 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo(({title, todoLis
     const dispatch = useAppDispatch()
     const tasksData: T_TaskResponseItems[] = useAppSelector(state => state.tasks_reducer[todoListId])
     const newTitle: RefObject<HTMLInputElement> = useRef(null)
+    const [error, setError] = useState(false)
     const removeTodoListId = useCallback(() => {
         dispatch(deleteTodoListTK(todoListId))
     }, [todoListId, dispatch])
@@ -26,8 +27,15 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo(({title, todoLis
     }, [todoListId, dispatch])
     const addTask = useCallback(() => {
         if (newTitle.current) {
-            dispatch(createTasksTK(todoListId, newTitle.current.value))
-            newTitle.current.value = ''
+            setError(false)
+            if (
+                newTitle.current.value.trim()
+            ) {
+                dispatch(createTasksTK(todoListId, newTitle.current.value))
+                newTitle.current.value = ''
+            } else {
+                setError(true)
+            }
         }
     }, [todoListId, dispatch])
     const changeFilter = useCallback((filterValue: T_FilterValues) => {
@@ -49,8 +57,9 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo(({title, todoLis
         </div>
         <div>
             <div>
-                <input ref={newTitle}/>
+                <input ref={newTitle} className={error ? style.error : ''}/>
                 <button onClick={addTask}>+</button>
+                {error && <div>Wrong value</div>}
             </div>
             {tasksData && filterTasksData().map((el) => (
                 <Task key={el.id} id={el.id}

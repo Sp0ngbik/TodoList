@@ -8,7 +8,7 @@ import {
     task_API,
     TasksStatus
 } from "../../api/task_API";
-import {AxiosResponse} from "axios";
+import {T_CreateTL} from "./todoList_reducer";
 
 
 export type T_TasksReducer = {
@@ -18,17 +18,24 @@ const initialState: T_TasksReducer = {}
 type T_GetTasks = ReturnType<typeof getTasksAC>
 type T_CreateTasks = ReturnType<typeof createTasksAC>
 type T_DeleteTask = ReturnType<typeof deleteTaskAC>
-type T_UpdateTaskStatusAC = ReturnType<typeof updateTaskTitleAC>
+// type T_UpdateTaskStatusAC = ReturnType<typeof updateTaskTitleAC>
 type T_UpdateTaskTitleAC = ReturnType<typeof updateTaskStatusAC>
-export type T_MainTasks = T_GetTasks | T_CreateTasks | T_DeleteTask | T_UpdateTaskStatusAC | T_UpdateTaskTitleAC
+export type T_MainTasks =
+    T_GetTasks
+    | T_CreateTasks
+    | T_DeleteTask
+    // | T_UpdateTaskStatusAC
+    | T_UpdateTaskTitleAC
+    | T_CreateTL
+
 
 export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
     switch (action.type) {
         case "GET_TASKS": {
-            return {...state, [action.todoListId]: action.taskData.data.items}
+            return {...state, [action.todoListId]: action.taskData.items}
         }
         case "CREATE_TASK": {
-            return {...state, [action.todoListId]: [action.newTask.data.data.item, ...state[action.todoListId]]}
+            return {...state, [action.todoListId]: [action.newTask.data.item, ...state[action.todoListId]]}
         }
         case "DELETE_TASK": {
             return {...state, [action.todoListId]: state[action.todoListId].filter(el => el.id !== action.taskId)}
@@ -42,6 +49,9 @@ export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
                 } : el)
             }
         }
+        case "ADD_TODOLIST": {
+            return {...state, [action.newTL.data.item.id]: []}
+        }
         default:
             return state
     }
@@ -49,27 +59,27 @@ export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
 
 
 ////////SYNC
-const getTasksAC = (todoListId: string, taskData: AxiosResponse<T_TasksCreateResponse>) => {
+export const getTasksAC = (todoListId: string, taskData:T_TasksCreateResponse) => {
     return {type: 'GET_TASKS', todoListId, taskData} as const
 }
-const createTasksAC = (todoListId: string, newTask: AxiosResponse<T_TasksResponse<T_CreateTask>>) => {
+const createTasksAC = (todoListId: string, newTask: T_TasksResponse<T_CreateTask>) => {
     return {type: 'CREATE_TASK', todoListId, newTask} as const
 }
-const deleteTaskAC = (todoListId: string, taskId: string) => {
+export const deleteTaskAC = (todoListId: string, taskId: string) => {
     return {type: "DELETE_TASK", todoListId, taskId} as const
 }
-const updateTaskStatusAC = (todoListId: string, taskId: string, status: TasksStatus) => {
+export const updateTaskStatusAC = (todoListId: string, taskId: string, status: TasksStatus) => {
     return {type: 'UPDATED_TASK', todoListId, taskId, status} as const
 }
-const updateTaskTitleAC = (todoListId: string, taskId: string, title: any) => {
-    return {type: "UPDATE_TASK_TITLE", todoListId, taskId, title} as const
-}
+// const updateTaskTitleAC = (todoListId: string, taskId: string, title: any) => {
+//     return {type: "UPDATE_TASK_TITLE", todoListId, taskId, title} as const
+// }
 
 ///////ASYNC
 export const getTasksTK = (todoListId: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
         const taskData = await task_API.getTask(todoListId)
-        dispatch(getTasksAC(todoListId, taskData))
+        dispatch(getTasksAC(todoListId, taskData.data))
     } catch (e) {
         console.log(e)
     }
@@ -78,7 +88,7 @@ export const getTasksTK = (todoListId: string): AppThunk => async (dispatch: App
 export const createTasksTK = (todoListId: string, title: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
         const newTask = await task_API.createTask(todoListId, title)
-        dispatch(createTasksAC(todoListId, newTask))
+        dispatch(createTasksAC(todoListId, newTask.data))
     } catch (e) {
         console.log(e)
     }
@@ -112,7 +122,6 @@ export const updateTaskFields = (todoListId: string, taskId: string, status: Tas
 }
 
 export const updateTaskTitleTK = (todoListId: string, taskId: string, newTitle: string): AppThunk => async (dispatch: AppDispatch) => {
-    console.log('s')
     const taskModel: T_UpdateTask = {
         title: newTitle,
         description: '',
@@ -123,8 +132,9 @@ export const updateTaskTitleTK = (todoListId: string, taskId: string, newTitle: 
         completed: false
     }
     try {
-        let newTask = await task_API.updateTask(todoListId, taskId, taskModel)
-        dispatch(updateTaskTitleAC(todoListId, taskId, newTask.data.data.item.title))
+        // let newTask =
+        await task_API.updateTask(todoListId, taskId, taskModel)
+        // dispatch(updateTaskTitleAC(todoListId, taskId, newTask.data.data.item.title))
     } catch (e) {
         console.log(e)
     }
