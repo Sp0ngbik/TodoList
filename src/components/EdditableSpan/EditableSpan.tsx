@@ -22,11 +22,11 @@ const EditableSpan: FC<T_EditableSpan> = ({callbackFunc, prevTitle}) => {
         }
     }
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        if (!errorStatus) {
+        if (errorStatus) {
+            setErrorStatus(false)
             setTitle(e.currentTarget.value)
         } else {
             setTitle(e.currentTarget.value)
-            setErrorStatus(false)
         }
     }
     return (

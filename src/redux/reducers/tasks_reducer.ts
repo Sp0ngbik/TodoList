@@ -18,13 +18,13 @@ const initialState: T_TasksReducer = {}
 type T_GetTasks = ReturnType<typeof getTasksAC>
 type T_CreateTasks = ReturnType<typeof createTasksAC>
 type T_DeleteTask = ReturnType<typeof deleteTaskAC>
-// type T_UpdateTaskStatusAC = ReturnType<typeof updateTaskTitleAC>
-type T_UpdateTaskTitleAC = ReturnType<typeof updateTaskStatusAC>
+type T_UpdateTaskStatusAC = ReturnType<typeof updateTaskStatusAC>
+type T_UpdateTaskTitleAC = ReturnType<typeof updateTaskTitleAC>
 export type T_MainTasks =
     T_GetTasks
     | T_CreateTasks
     | T_DeleteTask
-    // | T_UpdateTaskStatusAC
+    | T_UpdateTaskStatusAC
     | T_UpdateTaskTitleAC
     | T_CreateTL
 
@@ -49,6 +49,15 @@ export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
                 } : el)
             }
         }
+        case "UPDATE_TASK_TITLE": {
+            return {
+                ...state,
+                [action.todoListId]: [...state[action.todoListId].map(task => task.id === action.taskId ? {
+                    ...task,
+                    title: action.title
+                } : task)]
+            }
+        }
         case "ADD_TODOLIST": {
             return {...state, [action.newTL.data.item.id]: []}
         }
@@ -59,7 +68,7 @@ export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
 
 
 ////////SYNC
-export const getTasksAC = (todoListId: string, taskData:T_TasksCreateResponse) => {
+export const getTasksAC = (todoListId: string, taskData: T_TasksCreateResponse) => {
     return {type: 'GET_TASKS', todoListId, taskData} as const
 }
 const createTasksAC = (todoListId: string, newTask: T_TasksResponse<T_CreateTask>) => {
@@ -71,9 +80,9 @@ export const deleteTaskAC = (todoListId: string, taskId: string) => {
 export const updateTaskStatusAC = (todoListId: string, taskId: string, status: TasksStatus) => {
     return {type: 'UPDATED_TASK', todoListId, taskId, status} as const
 }
-// const updateTaskTitleAC = (todoListId: string, taskId: string, title: any) => {
-//     return {type: "UPDATE_TASK_TITLE", todoListId, taskId, title} as const
-// }
+const updateTaskTitleAC = (todoListId: string, taskId: string, title: any) => {
+    return {type: "UPDATE_TASK_TITLE", todoListId, taskId, title} as const
+}
 
 ///////ASYNC
 export const getTasksTK = (todoListId: string): AppThunk => async (dispatch: AppDispatch) => {
@@ -132,9 +141,8 @@ export const updateTaskTitleTK = (todoListId: string, taskId: string, newTitle: 
         completed: false
     }
     try {
-        // let newTask =
-        await task_API.updateTask(todoListId, taskId, taskModel)
-        // dispatch(updateTaskTitleAC(todoListId, taskId, newTask.data.data.item.title))
+        let newTask = await task_API.updateTask(todoListId, taskId, taskModel)
+        dispatch(updateTaskTitleAC(todoListId, taskId, newTask.data.data.item.title))
     } catch (e) {
         console.log(e)
     }
