@@ -9,6 +9,7 @@ import {
     TasksStatus
 } from "../../api/task_API";
 import {T_CreateTL} from "./todoList_reducer";
+import {T_SetTodoLists} from "../../../../x2_den/src/state/todolists-reducer";
 
 
 export type T_TasksReducer = {
@@ -61,6 +62,7 @@ export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
         case "ADD_TODOLIST": {
             return {...state, [action.newTL.data.item.id]: []}
         }
+
         default:
             return state
     }
