@@ -1,0 +1,28 @@
+.loadingScale {
+    content: '';
+    position: absolute;
+    width: 99.9%;
+    height: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.13);
+    display: flex;
+    top: 0;
+}
+
+
+.loadingScale::after {
+    content: '';
+    position: absolute;
+    width: 15%;
+    height: 5px;
+    background-color: red;
+    animation: runningLine 2s ease-in infinite alternate ;
+}
+
+@keyframes runningLine {
+    0% {
+        left: 0;
+    }
+    100% {
+        left: calc(85%);
+    }
+}

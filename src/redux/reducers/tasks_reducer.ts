@@ -10,6 +10,7 @@ import {
 } from "../../api/task_API";
 import {T_CreateTL} from "./todoList_reducer";
 import {T_SetTodoLists} from "../../../../x2_den/src/state/todolists-reducer";
+import {appSetStatusAC} from "./app_reducer";
 
 
 export type T_TasksReducer = {
@@ -99,7 +100,11 @@ export const getTasksTK = (todoListId: string): AppThunk => async (dispatch: App
 export const createTasksTK = (todoListId: string, title: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
         const newTask = await task_API.createTask(todoListId, title)
-        dispatch(createTasksAC(todoListId, newTask.data))
+        if (newTask.data.resultCode) {
+            dispatch(appSetStatusAC('failed', newTask.data.messages[0]))
+        } else {
+            dispatch(createTasksAC(todoListId, newTask.data))
+        }
     } catch (e) {
         console.log(e)
     }

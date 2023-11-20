@@ -5,3 +5,7 @@
 .errorText {
     color: red;
 }
+
+.newTodoWrapper {
+    margin: 40px auto;
+}

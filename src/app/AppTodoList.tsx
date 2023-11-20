@@ -5,6 +5,8 @@ import {getTodoListsTK, T_TodoListInitial} from "../redux/reducers/todoList_redu
 import AddNewTodo from "../components/AddNewTodo/AddNewTodo";
 import {TodoLists} from "../components/TodoList/TodoLists";
 import style from './app.module.css'
+import Notification from "../helpers/notification/Notification";
+import LoadingScale from "../helpers/loadingScale/LoadingScale";
 
 export type T_FilterValues = 'all' | 'completed' | 'inProgress'
 
@@ -16,6 +18,7 @@ const AppTodoList = React.memo(() => {
     const todoListsData: T_TodoListInitial[] = useAppSelector(data => data.todoList_reducer)
     return (
         <div>
+            <LoadingScale/>
             <AddNewTodo/>
             <div className={style.allTodosWrapper}>
                 {todoListsData.map(tl => (
@@ -24,6 +27,7 @@ const AppTodoList = React.memo(() => {
                     </div>
                 ))}
             </div>
+            <Notification/>
         </div>
     );
 })

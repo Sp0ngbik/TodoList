@@ -2,6 +2,7 @@ import {AppDispatch, AppThunk} from "../store";
 import {T_TodoListCreate, T_TodoListPost, T_TodoListResponse, todolist_API} from "../../api/todolist_API";
 import {T_FilterValues} from "../../app/AppTodoList";
 import {getTasksTK} from "./tasks_reducer";
+import {appSetStatusAC} from "./app_reducer";
 
 export type T_TodoListInitial = {
     filter: T_FilterValues
@@ -61,9 +62,11 @@ export const changeTodoListFilterAC = (todoListId: string, filter: T_FilterValue
 /////ASYNC
 export const getTodoListsTK = (): AppThunk => async (dispatch: AppDispatch) => {
     try {
+        dispatch(appSetStatusAC('loading', null))
         const tlData = await todolist_API.getTodoLists()
         dispatch(getTodoListAC(tlData.data))
         tlData.data.map(el => dispatch(getTasksTK(el.id)))
+        dispatch(appSetStatusAC('succeeded', 'TodoLists and tasks loaded'))
     } catch (e) {
         console.log(e)
     }
@@ -82,7 +85,11 @@ export const deleteTodoListTK = (todoListId: string): AppThunk => async (dispatc
 export const addNewTodoListTK = (title: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
         const newTL = await todolist_API.createTodoList(title)
-        dispatch(addNewTodoListAC(newTL.data))
+        if (newTL.data.resultCode) {
+            dispatch(appSetStatusAC('failed', newTL.data.messages[0]))
+        } else {
+            dispatch(addNewTodoListAC(newTL.data))
+        }
     } catch (e) {
         console.log(e)
     }
