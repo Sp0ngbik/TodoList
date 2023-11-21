@@ -19,9 +19,11 @@ const AddNewTodo = () => {
 
     return (
         <div className={style.newTodoWrapper}>
-            <input ref={newTitleForTodoList} onChange={onChangeHandler} className={errorStatus ? style.error : ''}/>
-            <button onClick={addNewTodoList}>+</button>
-            {errorStatus && <div className={style.errorText}>Wrong value!</div>}
+            <div className={style.newTodoBlock}>
+                <input ref={newTitleForTodoList} onChange={onChangeHandler} className={errorStatus ? style.error : ''}/>
+                <button onClick={addNewTodoList}>+</button>
+                {errorStatus && <p className={style.errorText}>Wrong value!</p>}
+            </div>
         </div>
     );
 };

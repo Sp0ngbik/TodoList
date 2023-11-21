@@ -23,7 +23,8 @@ const AppTodoList = React.memo(() => {
             <div className={style.allTodosWrapper}>
                 {todoListsData.map(tl => (
                     <div key={tl.id}>
-                        <TodoLists title={tl.title} todoListId={tl.id} filter={tl.filter}/>
+                        <TodoLists title={tl.title} todoListId={tl.id} filter={tl.filter}
+                                   entityStatus={tl.entityStatus}/>
                     </div>
                 ))}
             </div>

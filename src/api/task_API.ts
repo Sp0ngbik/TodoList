@@ -1,4 +1,5 @@
 import {instanceAxios} from "./todolist_API";
+import {T_ResponseStatus} from "../redux/reducers/app_reducer";
 
 export type T_TaskResponseItems = {
     description: string,
@@ -10,7 +11,8 @@ export type T_TaskResponseItems = {
     id: string,
     todoListId: string,
     order: number,
-    addedDate: string
+    addedDate: string,
+    entityTaskStatus: T_ResponseStatus
 }
 
 export type T_UpdateTask = {

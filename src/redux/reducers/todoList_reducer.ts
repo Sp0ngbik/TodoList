@@ -2,11 +2,12 @@ import {AppDispatch, AppThunk} from "../store";
 import {T_TodoListCreate, T_TodoListPost, T_TodoListResponse, todolist_API} from "../../api/todolist_API";
 import {T_FilterValues} from "../../app/AppTodoList";
 import {getTasksTK} from "./tasks_reducer";
-import {appSetStatusAC} from "./app_reducer";
+import {appSetStatusAC, T_ResponseStatus} from "./app_reducer";
 
-export type T_TodoListInitial = {
+export type T_TodoListInitial = T_TodoListCreate & {
     filter: T_FilterValues
-} & T_TodoListCreate
+    entityStatus: T_ResponseStatus
+}
 
 const initialState: T_TodoListInitial[] = []
 
@@ -15,12 +16,13 @@ type T_DeleteTL = ReturnType<typeof deleteTodoListAC>
 export type T_CreateTL = ReturnType<typeof addNewTodoListAC>
 type T_ChangeTitleTL = ReturnType<typeof editTodoListTitleAC>
 type T_ChangeFilterTL = ReturnType<typeof changeTodoListFilterAC>
-export type T_MainTL = T_GetTL | T_DeleteTL | T_CreateTL | T_ChangeTitleTL | T_ChangeFilterTL
+type T_ChangeEntityStatusTL = ReturnType<typeof changeTodoListEntityStatusAC>
+export type T_MainTL = T_GetTL | T_DeleteTL | T_CreateTL | T_ChangeTitleTL | T_ChangeFilterTL | T_ChangeEntityStatusTL
 
 export const todoList_reducer = (state = initialState, action: T_MainTL) => {
     switch (action.type) {
         case "GET_TODOLIST": {
-            return action.tlData.map(el => ({...el, filter: 'all'}))
+            return action.tlData.map(el => ({...el, entityStatus: 'idle', filter: 'all'}))
         }
         case "DELETE_TODOLIST": {
             return state.filter(el => el.id !== action.todoListId)
@@ -33,6 +35,9 @@ export const todoList_reducer = (state = initialState, action: T_MainTL) => {
         }
         case "CHANGE_TODOLIST_FILTER": {
             return state.map(el => el.id === action.todoListId ? {...el, filter: action.filter} : el)
+        }
+        case "CHANGE_TODOLIST_ENTITY_STATUS": {
+            return state.map(el => el.id === action.todoListId ? {...el, entityStatus: action.status} : el)
         }
         default:
             return state
@@ -59,6 +64,10 @@ const editTodoListTitleAC = (todoListId: string, newTitleTL: string) => {
 export const changeTodoListFilterAC = (todoListId: string, filter: T_FilterValues) => {
     return {type: 'CHANGE_TODOLIST_FILTER', todoListId, filter} as const
 }
+
+const changeTodoListEntityStatusAC = (todoListId: string, status: T_ResponseStatus) => {
+    return {type: 'CHANGE_TODOLIST_ENTITY_STATUS', todoListId, status} as const
+}
 /////ASYNC
 export const getTodoListsTK = (): AppThunk => async (dispatch: AppDispatch) => {
     try {
@@ -74,8 +83,11 @@ export const getTodoListsTK = (): AppThunk => async (dispatch: AppDispatch) => {
 
 export const deleteTodoListTK = (todoListId: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
+        dispatch(appSetStatusAC('loading', null))
+        dispatch(changeTodoListEntityStatusAC(todoListId, 'loading'))
         await todolist_API.deleteTodoList(todoListId)
         dispatch(deleteTodoListAC(todoListId))
+        dispatch(appSetStatusAC('succeeded', 'TodoList deleted'))
 
     } catch (e) {
         console.log(e)

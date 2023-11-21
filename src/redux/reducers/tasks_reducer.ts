@@ -8,9 +8,8 @@ import {
     task_API,
     TasksStatus
 } from "../../api/task_API";
+import {appSetStatusAC, T_ResponseStatus} from "./app_reducer";
 import {T_CreateTL} from "./todoList_reducer";
-import {T_SetTodoLists} from "../../../../x2_den/src/state/todolists-reducer";
-import {appSetStatusAC} from "./app_reducer";
 
 
 export type T_TasksReducer = {
@@ -22,19 +21,21 @@ type T_CreateTasks = ReturnType<typeof createTasksAC>
 type T_DeleteTask = ReturnType<typeof deleteTaskAC>
 type T_UpdateTaskStatusAC = ReturnType<typeof updateTaskStatusAC>
 type T_UpdateTaskTitleAC = ReturnType<typeof updateTaskTitleAC>
+type T_ChangeTaskEntityStatusAC = ReturnType<typeof changeTaskEntityStatusAC>
 export type T_MainTasks =
     T_GetTasks
-    | T_CreateTasks
-    | T_DeleteTask
-    | T_UpdateTaskStatusAC
-    | T_UpdateTaskTitleAC
     | T_CreateTL
+    | T_DeleteTask
+    | T_CreateTasks
+    | T_UpdateTaskTitleAC
+    | T_UpdateTaskStatusAC
+    | T_ChangeTaskEntityStatusAC
 
 
 export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
     switch (action.type) {
         case "GET_TASKS": {
-            return {...state, [action.todoListId]: action.taskData.items}
+            return {...state, [action.todoListId]: action.taskData.items.map(el => ({...el, entityTaskStatus: 'idle'}))}
         }
         case "CREATE_TASK": {
             return {...state, [action.todoListId]: [action.newTask.data.item, ...state[action.todoListId]]}
@@ -48,6 +49,15 @@ export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
                 [action.todoListId]: state[action.todoListId].map(el => el.id === action.taskId ? {
                     ...el,
                     status: action.status
+                } : el)
+            }
+        }
+        case "CHANGE_TASK_ENTITY_STATUS": {
+            return {
+                ...state,
+                [action.todoListId]: state[action.todoListId].map(el => el.id === action.taskId ? {
+                    ...el,
+                    entityTaskStatus: action.status
                 } : el)
             }
         }
@@ -86,7 +96,9 @@ export const updateTaskStatusAC = (todoListId: string, taskId: string, status: T
 const updateTaskTitleAC = (todoListId: string, taskId: string, title: any) => {
     return {type: "UPDATE_TASK_TITLE", todoListId, taskId, title} as const
 }
-
+const changeTaskEntityStatusAC = (todoListId: string, taskId: string, status: T_ResponseStatus) => {
+    return {type: 'CHANGE_TASK_ENTITY_STATUS', todoListId, taskId, status} as const
+}
 ///////ASYNC
 export const getTasksTK = (todoListId: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
@@ -112,8 +124,11 @@ export const createTasksTK = (todoListId: string, title: string): AppThunk => as
 
 export const deleteTaskTK = (todoListId: string, taskId: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
+        dispatch(appSetStatusAC('loading', null))
+        dispatch(changeTaskEntityStatusAC(todoListId, taskId, 'loading'))
         await task_API.deleteTask(todoListId, taskId)
         dispatch(deleteTaskAC(todoListId, taskId))
+        dispatch(appSetStatusAC('succeeded', 'Task was deleted'))
     } catch (e) {
         console.log(e)
     }

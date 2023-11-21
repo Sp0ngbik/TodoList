@@ -12,7 +12,7 @@
     padding: 10px 80px;
     border-radius: 10px;
     height: 100%;
-    background-color: red;
+    background-color: #c56d6d;
 }
 
 .notification_succeed {
@@ -20,5 +20,5 @@
     padding: 10px 80px;
     border-radius: 10px;
     height: 100%;
-    background-color: green;
+    background-color: #489e48;
 }

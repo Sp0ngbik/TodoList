@@ -4,15 +4,17 @@ import {useAppDispatch} from "../../hooks/hooks";
 import style from './tasks.module.css'
 import {TasksStatus} from "../../api/task_API";
 import EditableSpan from "../EdditableSpan/EditableSpan";
+import {T_ResponseStatus} from "../../redux/reducers/app_reducer";
 
 type T_Task = {
     id: string
     title: string,
     todoListId: string,
     status: TasksStatus
+    entityStatus: T_ResponseStatus
 }
 
-const Task: FC<T_Task> = ({title, id, todoListId, status}) => {
+const Task: FC<T_Task> = ({title, id, todoListId, status, entityStatus}) => {
     const dispatch = useAppDispatch()
 
     const deleteTask = useCallback((taskId: string) => {
@@ -27,16 +29,18 @@ const Task: FC<T_Task> = ({title, id, todoListId, status}) => {
         dispatch(updateTaskTitleTK(todoListId, id, title))
     }, [todoListId, id, dispatch])
 
+    const isTaskDisabled = entityStatus === 'loading'
     return (
         <div key={crypto.randomUUID()}>
             <div className={style.task_wrapper}>
                 <input
+                    disabled={isTaskDisabled}
                     checked={status === TasksStatus.Completed}
                     onChange={(e) =>
                         changeStatus(e.currentTarget.checked ? TasksStatus.Completed : TasksStatus.InProgress)}
                     type='checkbox'/>
-                <EditableSpan callbackFunc={updateTaskTitle} prevTitle={title}/>
-                <button onClick={() => deleteTask(id)}>X</button>
+                <EditableSpan disabled={isTaskDisabled} callbackFunc={updateTaskTitle} prevTitle={title}/>
+                <button onClick={() => deleteTask(id)} disabled={isTaskDisabled}>X</button>
             </div>
         </div>
     );

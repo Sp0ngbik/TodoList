@@ -3,15 +3,16 @@ import style from './editableSpan.module.css'
 
 type T_EditableSpan = {
     callbackFunc: (title: string) => void,
-    prevTitle: string
+    prevTitle: string,
+    disabled: boolean
 }
 
-const EditableSpan: FC<T_EditableSpan> = ({callbackFunc, prevTitle}) => {
+const EditableSpan: FC<T_EditableSpan> = ({callbackFunc, prevTitle, disabled}) => {
     const [editMode, setEditMode] = useState(false)
     const [title, setTitle] = useState(prevTitle)
     const [errorStatus, setErrorStatus] = useState(false)
     const onActivateEditMode = () => {
-        setEditMode(true)
+        disabled ? setEditMode(false) : setEditMode(true)
     }
     const onDeactivateEditMode = () => {
         if (title.trim()) {
@@ -31,10 +32,11 @@ const EditableSpan: FC<T_EditableSpan> = ({callbackFunc, prevTitle}) => {
     }
     return (
         editMode ?
-            <div>
-                <input value={title} onChange={onChangeHandler} className={errorStatus ? style.error : ''} autoFocus
+            <div className={style.editSpanWrapper}>
+                <input value={title} onChange={onChangeHandler} className={errorStatus ? style.error : ''}
+                       autoFocus
                        onBlur={onDeactivateEditMode}/>
-                {errorStatus && <span>Error in field</span>}
+                {errorStatus && <div className={style.error_text}>Error in field</div>}
             </div>
             :
             <div onDoubleClick={onActivateEditMode}>{title}</div>
