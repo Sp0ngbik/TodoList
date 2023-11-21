@@ -1,4 +1,4 @@
-import {AppDispatch, AppThunk} from "../store";
+import {AppDispatch, AppThunk, RootState} from "../store";
 import {
     T_CreateTask,
     T_TaskResponseItems,
@@ -11,6 +11,14 @@ import {
 import {appSetStatusAC, T_ResponseStatus} from "./app_reducer";
 import {T_CreateTL} from "./todoList_reducer";
 
+type T_PutTask = {
+    title?: string
+    description?: string,
+    status?: TasksStatus,
+    deadline?: string,
+    priority?: number,
+    startDate?: string
+}
 
 export type T_TasksReducer = {
     [todoListId: string]: T_TaskResponseItems[]
@@ -20,14 +28,12 @@ type T_GetTasks = ReturnType<typeof getTasksAC>
 type T_CreateTasks = ReturnType<typeof createTasksAC>
 type T_DeleteTask = ReturnType<typeof deleteTaskAC>
 type T_UpdateTaskStatusAC = ReturnType<typeof updateTaskStatusAC>
-type T_UpdateTaskTitleAC = ReturnType<typeof updateTaskTitleAC>
 type T_ChangeTaskEntityStatusAC = ReturnType<typeof changeTaskEntityStatusAC>
 export type T_MainTasks =
     T_GetTasks
     | T_CreateTL
     | T_DeleteTask
     | T_CreateTasks
-    | T_UpdateTaskTitleAC
     | T_UpdateTaskStatusAC
     | T_ChangeTaskEntityStatusAC
 
@@ -48,7 +54,7 @@ export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
                 ...state,
                 [action.todoListId]: state[action.todoListId].map(el => el.id === action.taskId ? {
                     ...el,
-                    status: action.status
+                    ...action.taskModel
                 } : el)
             }
         }
@@ -59,15 +65,6 @@ export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
                     ...el,
                     entityTaskStatus: action.status
                 } : el)
-            }
-        }
-        case "UPDATE_TASK_TITLE": {
-            return {
-                ...state,
-                [action.todoListId]: [...state[action.todoListId].map(task => task.id === action.taskId ? {
-                    ...task,
-                    title: action.title
-                } : task)]
             }
         }
         case "ADD_TODOLIST": {
@@ -90,11 +87,8 @@ const createTasksAC = (todoListId: string, newTask: T_TasksResponse<T_CreateTask
 export const deleteTaskAC = (todoListId: string, taskId: string) => {
     return {type: "DELETE_TASK", todoListId, taskId} as const
 }
-export const updateTaskStatusAC = (todoListId: string, taskId: string, status: TasksStatus) => {
-    return {type: 'UPDATED_TASK', todoListId, taskId, status} as const
-}
-const updateTaskTitleAC = (todoListId: string, taskId: string, title: any) => {
-    return {type: "UPDATE_TASK_TITLE", todoListId, taskId, title} as const
+export const updateTaskStatusAC = (todoListId: string, taskId: string, taskModel: T_PutTask) => {
+    return {type: 'UPDATED_TASK', todoListId, taskId, taskModel} as const
 }
 const changeTaskEntityStatusAC = (todoListId: string, taskId: string, status: T_ResponseStatus) => {
     return {type: 'CHANGE_TASK_ENTITY_STATUS', todoListId, taskId, status} as const
@@ -115,8 +109,6 @@ export const createTasksTK = (todoListId: string, title: string): AppThunk => as
         const newTask = await task_API.createTask(todoListId, title)
         if (newTask.data.resultCode) {
             dispatch(appSetStatusAC('failed', newTask.data.messages[0]))
-            dispatch(appSetStatusAC('idle', null))
-
         } else {
             dispatch(createTasksAC(todoListId, newTask.data))
             dispatch(appSetStatusAC('succeeded', 'Task added'))
@@ -131,47 +123,43 @@ export const deleteTaskTK = (todoListId: string, taskId: string): AppThunk => as
     try {
         dispatch(appSetStatusAC('loading', null))
         dispatch(changeTaskEntityStatusAC(todoListId, taskId, 'loading'))
-        await task_API.deleteTask(todoListId, taskId)
-        dispatch(deleteTaskAC(todoListId, taskId))
-        dispatch(appSetStatusAC('succeeded', 'Task was deleted'))
+        let deleteTask = await task_API.deleteTask(todoListId, taskId)
+        if (deleteTask.data.resultCode) {
+            dispatch(appSetStatusAC('failed', deleteTask.data.messages[0]))
+        } else {
+            dispatch(deleteTaskAC(todoListId, taskId))
+            dispatch(appSetStatusAC('succeeded', 'Task was deleted'))
+        }
     } catch (e) {
         console.log(e)
         dispatch(appSetStatusAC('failed', 'Network error'))
     }
 }
 
-export const updateTaskFields = (todoListId: string, taskId: string, status: TasksStatus, title: string): AppThunk => async (dispatch: AppDispatch) => {
-    const taskModel: T_UpdateTask = {
-        title: title,
-        completed: false,
-        priority: 2,
-        startDate: '',
-        status: status,
-        deadline: '',
-        description: ''
-    }
-    try {
-        let newTask = await task_API.updateTask(todoListId, taskId, taskModel)
-        dispatch(updateTaskStatusAC(todoListId, taskId, newTask.data.data.item.status))
-    } catch (e) {
-        console.log(e)
-    }
-}
-
-export const updateTaskTitleTK = (todoListId: string, taskId: string, newTitle: string): AppThunk => async (dispatch: AppDispatch) => {
-    const taskModel: T_UpdateTask = {
-        title: newTitle,
-        description: '',
-        status: TasksStatus.New,
-        deadline: '',
-        startDate: '',
-        priority: 0,
-        completed: false
-    }
-    try {
-        let newTask = await task_API.updateTask(todoListId, taskId, taskModel)
-        dispatch(updateTaskTitleAC(todoListId, taskId, newTask.data.data.item.title))
-    } catch (e) {
-        console.log(e)
+export const updateTaskFields = (todoListId: string, taskId: string, newField: T_PutTask): AppThunk => async (dispatch: AppDispatch, getState: () => RootState) => {
+    const model: T_TaskResponseItems[] = getState().tasks_reducer[todoListId]
+    let task = model.find(el => el.id === taskId)
+    if (task) {
+        const taskModel: T_UpdateTask = {
+            title: task.title,
+            description: task.description,
+            status: task.status,
+            deadline: task.deadLine,
+            priority: task.priority,
+            startDate: task.startDate,
+            completed: false,
+            ...newField
+        }
+        try {
+            let newTask = await task_API.updateTask(todoListId, taskId, taskModel)
+            if (newTask.data.resultCode) {
+                dispatch(appSetStatusAC('failed', newTask.data.messages[0]))
+            } else {
+                dispatch(updateTaskStatusAC(todoListId, taskId, taskModel))
+                dispatch(appSetStatusAC('succeeded', 'Task was updated'))
+            }
+        } catch (e) {
+            console.log(e)
+        }
     }
 }

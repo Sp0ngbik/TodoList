@@ -1,5 +1,5 @@
 import React, {FC, useCallback} from 'react';
-import {deleteTaskTK, updateTaskFields, updateTaskTitleTK} from "../../redux/reducers/tasks_reducer";
+import {deleteTaskTK, updateTaskFields} from "../../redux/reducers/tasks_reducer";
 import {useAppDispatch} from "../../hooks/hooks";
 import style from './tasks.module.css'
 import {TasksStatus} from "../../api/task_API";
@@ -22,11 +22,12 @@ const Task: FC<T_Task> = ({title, id, todoListId, status, entityStatus}) => {
     }, [todoListId, dispatch])
 
     const changeStatus = useCallback((status: TasksStatus) => {
-        dispatch(updateTaskFields(todoListId, id, status, title))
-    }, [todoListId, id, dispatch, title])
+        // dispatch(updateTaskFields(todoListId, id, status, title))
+        dispatch(updateTaskFields(todoListId, id, {status}))
+    }, [todoListId, id, dispatch])
 
     const updateTaskTitle = useCallback((title: string) => {
-        dispatch(updateTaskTitleTK(todoListId, id, title))
+        dispatch(updateTaskFields(todoListId, id, {title}))
     }, [todoListId, id, dispatch])
 
     const isTaskDisabled = entityStatus === 'loading'
@@ -39,7 +40,9 @@ const Task: FC<T_Task> = ({title, id, todoListId, status, entityStatus}) => {
                     onChange={(e) =>
                         changeStatus(e.currentTarget.checked ? TasksStatus.Completed : TasksStatus.InProgress)}
                     type='checkbox'/>
-                <EditableSpan disabled={isTaskDisabled} callbackFunc={updateTaskTitle} prevTitle={title}/>
+                <EditableSpan disabled={isTaskDisabled}
+                              callbackFunc={updateTaskTitle}
+                              prevTitle={title}/>
                 <button onClick={() => deleteTask(id)} disabled={isTaskDisabled}>X</button>
             </div>
         </div>

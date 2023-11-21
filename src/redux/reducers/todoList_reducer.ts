@@ -53,7 +53,7 @@ const deleteTodoListAC = (todoListId: string) => {
     return {type: 'DELETE_TODOLIST', todoListId} as const
 }
 
-const addNewTodoListAC = (newTL: T_TodoListResponse<T_TodoListPost>) => {
+export const addNewTodoListAC = (newTL: T_TodoListResponse<T_TodoListPost>) => {
     return {type: 'ADD_TODOLIST', newTL} as const
 }
 
@@ -86,10 +86,12 @@ export const deleteTodoListTK = (todoListId: string): AppThunk => async (dispatc
     try {
         dispatch(appSetStatusAC('loading', null))
         dispatch(changeTodoListEntityStatusAC(todoListId, 'loading'))
-        await todolist_API.deleteTodoList(todoListId)
-        dispatch(deleteTodoListAC(todoListId))
-        dispatch(appSetStatusAC('succeeded', 'TodoList deleted'))
-
+        let deleteTl = await todolist_API.deleteTodoList(todoListId)
+        if (deleteTl.data.resultCode) {
+            dispatch(appSetStatusAC('failed', deleteTl.data.messages[0]))
+        } else {
+            dispatch(deleteTodoListAC(todoListId))
+        }
     } catch (e) {
         dispatch(appSetStatusAC('failed', 'Network error'))
         console.log(e)
@@ -112,8 +114,12 @@ export const addNewTodoListTK = (title: string): AppThunk => async (dispatch: Ap
 
 export const editTodoListTitleTK = (todoListId: string, title: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
-        await todolist_API.updateTodoList(todoListId, title)
-        dispatch(editTodoListTitleAC(todoListId, title))
+        let updateTL = await todolist_API.updateTodoList(todoListId, title)
+        if (updateTL.data.resultCode) {
+            dispatch(appSetStatusAC('failed', updateTL.data.messages[0]))
+        } else {
+            dispatch(editTodoListTitleAC(todoListId, title))
+        }
     } catch (e) {
         dispatch(appSetStatusAC('failed', 'Network error'))
         console.log(e)
