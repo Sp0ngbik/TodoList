@@ -111,14 +111,19 @@ export const getTasksTK = (todoListId: string): AppThunk => async (dispatch: App
 
 export const createTasksTK = (todoListId: string, title: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
+        dispatch(appSetStatusAC('loading', null))
         const newTask = await task_API.createTask(todoListId, title)
         if (newTask.data.resultCode) {
             dispatch(appSetStatusAC('failed', newTask.data.messages[0]))
+            dispatch(appSetStatusAC('idle', null))
+
         } else {
             dispatch(createTasksAC(todoListId, newTask.data))
+            dispatch(appSetStatusAC('succeeded', 'Task added'))
         }
     } catch (e) {
         console.log(e)
+        dispatch(appSetStatusAC('failed', 'Network error'))
     }
 }
 
@@ -131,6 +136,7 @@ export const deleteTaskTK = (todoListId: string, taskId: string): AppThunk => as
         dispatch(appSetStatusAC('succeeded', 'Task was deleted'))
     } catch (e) {
         console.log(e)
+        dispatch(appSetStatusAC('failed', 'Network error'))
     }
 }
 

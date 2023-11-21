@@ -77,6 +77,7 @@ export const getTodoListsTK = (): AppThunk => async (dispatch: AppDispatch) => {
         tlData.data.map(el => dispatch(getTasksTK(el.id)))
         dispatch(appSetStatusAC('succeeded', 'TodoLists and tasks loaded'))
     } catch (e) {
+        dispatch(appSetStatusAC('failed', 'Network error'))
         console.log(e)
     }
 }
@@ -90,6 +91,7 @@ export const deleteTodoListTK = (todoListId: string): AppThunk => async (dispatc
         dispatch(appSetStatusAC('succeeded', 'TodoList deleted'))
 
     } catch (e) {
+        dispatch(appSetStatusAC('failed', 'Network error'))
         console.log(e)
     }
 }
@@ -102,8 +104,9 @@ export const addNewTodoListTK = (title: string): AppThunk => async (dispatch: Ap
         } else {
             dispatch(addNewTodoListAC(newTL.data))
         }
-    } catch (e) {
-        console.log(e)
+    } catch (error) {
+        dispatch(appSetStatusAC('failed', 'Network error'))
+        console.log(error)
     }
 }
 
@@ -112,6 +115,7 @@ export const editTodoListTitleTK = (todoListId: string, title: string): AppThunk
         await todolist_API.updateTodoList(todoListId, title)
         dispatch(editTodoListTitleAC(todoListId, title))
     } catch (e) {
+        dispatch(appSetStatusAC('failed', 'Network error'))
         console.log(e)
     }
 }
