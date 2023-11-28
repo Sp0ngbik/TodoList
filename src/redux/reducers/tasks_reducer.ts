@@ -10,6 +10,7 @@ import {
 } from "../../api/task_API";
 import {appSetStatusAC, T_ResponseStatus} from "./app_reducer";
 import {T_CreateTL} from "./todoList_reducer";
+import {localErrorHandler, networkErrorHandler} from "../../utils/errorsHandler";
 
 type T_PutTask = {
     title?: string
@@ -99,7 +100,7 @@ export const getTasksTK = (todoListId: string): AppThunk => async (dispatch: App
         const taskData = await task_API.getTask(todoListId)
         dispatch(getTasksAC(todoListId, taskData.data))
     } catch (e) {
-        console.log(e)
+        networkErrorHandler(dispatch, e)
     }
 }
 
@@ -108,14 +109,14 @@ export const createTasksTK = (todoListId: string, title: string): AppThunk => as
         dispatch(appSetStatusAC('loading', null))
         const newTask = await task_API.createTask(todoListId, title)
         if (newTask.data.resultCode) {
-            dispatch(appSetStatusAC('failed', newTask.data.messages[0]))
+            localErrorHandler(dispatch, newTask)
         } else {
             dispatch(createTasksAC(todoListId, newTask.data))
             dispatch(appSetStatusAC('succeeded', 'Task added'))
         }
     } catch (e) {
-        console.log(e)
-        dispatch(appSetStatusAC('failed', 'Network error'))
+        networkErrorHandler(dispatch, e)
+
     }
 }
 
@@ -125,14 +126,14 @@ export const deleteTaskTK = (todoListId: string, taskId: string): AppThunk => as
         dispatch(changeTaskEntityStatusAC(todoListId, taskId, 'loading'))
         let deleteTask = await task_API.deleteTask(todoListId, taskId)
         if (deleteTask.data.resultCode) {
-            dispatch(appSetStatusAC('failed', deleteTask.data.messages[0]))
+            localErrorHandler(dispatch, deleteTask)
         } else {
             dispatch(deleteTaskAC(todoListId, taskId))
             dispatch(appSetStatusAC('succeeded', 'Task was deleted'))
         }
     } catch (e) {
-        console.log(e)
-        dispatch(appSetStatusAC('failed', 'Network error'))
+        networkErrorHandler(dispatch, e)
+
     }
 }
 
@@ -153,13 +154,13 @@ export const updateTaskFields = (todoListId: string, taskId: string, newField: T
         try {
             let newTask = await task_API.updateTask(todoListId, taskId, taskModel)
             if (newTask.data.resultCode) {
-                dispatch(appSetStatusAC('failed', newTask.data.messages[0]))
+                localErrorHandler(dispatch, newTask)
             } else {
-                dispatch(updateTaskStatusAC(todoListId, taskId, taskModel))
+                // dispatch(updateTaskStatusAC(todoListId, taskId, taskModel))
                 dispatch(appSetStatusAC('succeeded', 'Task was updated'))
             }
         } catch (e) {
-            console.log(e)
+            networkErrorHandler(dispatch, e)
         }
     }
 }

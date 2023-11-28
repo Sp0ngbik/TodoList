@@ -1,40 +1,26 @@
 import React, {useEffect} from 'react';
-import style from './notification.module.css'
 import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import {appSetStatusAC} from "../../redux/reducers/app_reducer";
+import {toast, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.min.css';
 
-const Notification = () => {
+export const Notification = () => {
     const dispatch = useAppDispatch()
-    const appNotificationSelector = useAppSelector(state => state.app_reducer)
-    useEffect(() => {
-        const b = setTimeout(() => {
-            dispatch(appSetStatusAC('idle', null))
-        }, 3000)
-        return () => {
-            clearTimeout(b)
-        }
-    }, [appNotificationSelector])
-    const classValidator = () => {
-        if (appNotificationSelector.status === 'failed') {
-            return style.notification_failed
-        } else if (
-            appNotificationSelector.status === 'succeeded'
-        ) {
-            return style.notification_succeed
-        } else {
-            return ''
-        }
-    }
-    // const classValidator =
-    //     appNotificationSelector.status === 'failed' && style.notification_failed ||
-    //     appNotificationSelector.status === 'succeeded' ? style.notification_succeed : ''
-    return (
-        <div className={style.notification_block}>
-            <div className={classValidator()}>
-                {appNotificationSelector.errorMessage && appNotificationSelector.errorMessage}
-            </div>
-        </div>
-    );
-};
+    const appStatus = useAppSelector((state) => state.app_reducer)
 
-export default Notification;
+    useEffect(() => {
+        console.log(appStatus.informMessage)
+        if (appStatus.informMessage && appStatus.status === 'failed') {
+            toast.error(appStatus.informMessage)
+        } else if (appStatus.informMessage && appStatus.status === 'succeeded') {
+            toast.success(appStatus.informMessage)
+        }
+        toast.onChange(({status}) => {
+            if (status === 'added') {
+                dispatch(appSetStatusAC('idle', null))
+            }
+        })
+    }, [appStatus.informMessage])
+
+    return <ToastContainer theme="dark" autoClose={3000}/>
+}

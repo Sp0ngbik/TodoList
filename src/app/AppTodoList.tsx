@@ -1,12 +1,11 @@
 import React, {useEffect} from 'react';
-import './app.module.css';
 import {useAppDispatch, useAppSelector} from "../hooks/hooks";
 import {getTodoListsTK, T_TodoListInitial} from "../redux/reducers/todoList_reducer";
 import AddNewTodo from "../components/AddNewTodo/AddNewTodo";
 import {TodoLists} from "../components/TodoList/TodoLists";
 import style from './app.module.css'
-import Notification from "../helpers/notification/Notification";
 import LoadingScale from "../helpers/loadingScale/LoadingScale";
+import {Notification} from "../helpers/notification/Notification";
 
 export type T_FilterValues = 'all' | 'completed' | 'inProgress'
 
@@ -19,6 +18,7 @@ const AppTodoList = React.memo(() => {
     return (
         <div>
             <LoadingScale/>
+            <Notification/>
             <AddNewTodo/>
             <div className={style.allTodosWrapper}>
                 {todoListsData.map(tl => (
@@ -28,7 +28,6 @@ const AppTodoList = React.memo(() => {
                     </div>
                 ))}
             </div>
-            <Notification/>
         </div>
     );
 })
