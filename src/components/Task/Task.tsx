@@ -22,7 +22,6 @@ const Task: FC<T_Task> = ({title, id, todoListId, status, entityStatus}) => {
     }, [todoListId, dispatch])
 
     const changeStatus = useCallback((status: TasksStatus) => {
-        // dispatch(updateTaskFields(todoListId, id, status, title))
         dispatch(updateTaskFields(todoListId, id, {status}))
     }, [todoListId, id, dispatch])
 

@@ -3,7 +3,8 @@ import {T_TodoListCreate, T_TodoListPost, T_TodoListResponse, todolist_API} from
 import {T_FilterValues} from "../../app/AppTodoList";
 import {getTasksTK} from "./tasks_reducer";
 import {appSetStatusAC, T_ResponseStatus} from "./app_reducer";
-import {networkErrorHandler} from "../../utils/errorsHandler";
+import {localErrorHandler, networkErrorHandler} from "../../utils/errorsHandler";
+import {successHandler} from "../../utils/successHandler";
 
 export type T_TodoListInitial = T_TodoListCreate & {
     filter: T_FilterValues
@@ -72,11 +73,11 @@ const changeTodoListEntityStatusAC = (todoListId: string, status: T_ResponseStat
 /////ASYNC
 export const getTodoListsTK = (): AppThunk => async (dispatch: AppDispatch) => {
     try {
-        dispatch(appSetStatusAC('loading', null))
+        dispatch(appSetStatusAC('loading'))
         const tlData = await todolist_API.getTodoLists()
         dispatch(getTodoListAC(tlData.data))
         tlData.data.map(el => dispatch(getTasksTK(el.id)))
-        dispatch(appSetStatusAC('succeeded', 'TodoLists and tasks loaded'))
+        successHandler(dispatch,'TodoLists and tasks loaded')
     } catch (e) {
         networkErrorHandler(dispatch, e)
     }
@@ -84,16 +85,15 @@ export const getTodoListsTK = (): AppThunk => async (dispatch: AppDispatch) => {
 
 export const deleteTodoListTK = (todoListId: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
-        dispatch(appSetStatusAC('loading', null))
+        dispatch(appSetStatusAC('loading'))
         dispatch(changeTodoListEntityStatusAC(todoListId, 'loading'))
         await todolist_API.deleteTodoList(todoListId)
-        dispatch(appSetStatusAC('succeeded', 'TodoLists was deleted'))
         dispatch(deleteTodoListAC(todoListId))
+        successHandler(dispatch,'TodoLists was deleted')
     } catch (e) {
         networkErrorHandler(dispatch, e)
     }
-    dispatch(appSetStatusAC('idle', null))
-
+    // dispatch(appSetStatusAC('idle', null))
 }
 
 export const addNewTodoListTK = (title: string): AppThunk => async (dispatch: AppDispatch) => {
@@ -103,6 +103,7 @@ export const addNewTodoListTK = (title: string): AppThunk => async (dispatch: Ap
             networkErrorHandler(dispatch, newTL.data.messages[0])
         } else {
             dispatch(addNewTodoListAC(newTL.data))
+            successHandler(dispatch,'TodoLists was added')
         }
     } catch (e) {
         networkErrorHandler(dispatch, e)
@@ -113,9 +114,10 @@ export const editTodoListTitleTK = (todoListId: string, title: string): AppThunk
     try {
         let updateTL = await todolist_API.updateTodoList(todoListId, title)
         if (updateTL.data.resultCode) {
-            networkErrorHandler(dispatch, updateTL.data.messages[0])
+            localErrorHandler(dispatch, updateTL)
         } else {
             dispatch(editTodoListTitleAC(todoListId, title))
+            successHandler(dispatch,'TodoLists was edited')
         }
     } catch (e) {
         networkErrorHandler(dispatch, e)

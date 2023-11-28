@@ -11,6 +11,7 @@ import {
 import {appSetStatusAC, T_ResponseStatus} from "./app_reducer";
 import {T_CreateTL} from "./todoList_reducer";
 import {localErrorHandler, networkErrorHandler} from "../../utils/errorsHandler";
+import {successHandler} from "../../utils/successHandler";
 
 type T_PutTask = {
     title?: string
@@ -106,30 +107,29 @@ export const getTasksTK = (todoListId: string): AppThunk => async (dispatch: App
 
 export const createTasksTK = (todoListId: string, title: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
-        dispatch(appSetStatusAC('loading', null))
+        dispatch(appSetStatusAC('loading'))
         const newTask = await task_API.createTask(todoListId, title)
         if (newTask.data.resultCode) {
             localErrorHandler(dispatch, newTask)
         } else {
+            successHandler(dispatch, 'Task added')
             dispatch(createTasksAC(todoListId, newTask.data))
-            dispatch(appSetStatusAC('succeeded', 'Task added'))
         }
     } catch (e) {
         networkErrorHandler(dispatch, e)
-
     }
 }
 
 export const deleteTaskTK = (todoListId: string, taskId: string): AppThunk => async (dispatch: AppDispatch) => {
     try {
-        dispatch(appSetStatusAC('loading', null))
+        dispatch(appSetStatusAC('loading'))
         dispatch(changeTaskEntityStatusAC(todoListId, taskId, 'loading'))
         let deleteTask = await task_API.deleteTask(todoListId, taskId)
         if (deleteTask.data.resultCode) {
             localErrorHandler(dispatch, deleteTask)
         } else {
             dispatch(deleteTaskAC(todoListId, taskId))
-            dispatch(appSetStatusAC('succeeded', 'Task was deleted'))
+            successHandler(dispatch, 'Task was deleted')
         }
     } catch (e) {
         networkErrorHandler(dispatch, e)
@@ -156,8 +156,8 @@ export const updateTaskFields = (todoListId: string, taskId: string, newField: T
             if (newTask.data.resultCode) {
                 localErrorHandler(dispatch, newTask)
             } else {
-                // dispatch(updateTaskStatusAC(todoListId, taskId, taskModel))
-                dispatch(appSetStatusAC('succeeded', 'Task was updated'))
+                successHandler(dispatch, 'Task was updated')
+                dispatch(updateTaskStatusAC(todoListId, taskId, taskModel))
             }
         } catch (e) {
             networkErrorHandler(dispatch, e)
