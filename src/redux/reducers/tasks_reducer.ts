@@ -46,6 +46,10 @@ export const tasks_reducer = (state = initialState, action: T_MainTasks) => {
             return {...state, [action.todoListId]: action.taskData.items.map(el => ({...el, entityTaskStatus: 'idle'}))}
         }
         case "CREATE_TASK": {
+            if (state[action.todoListId].length >= 10) {
+                state[action.todoListId].pop()
+                return {...state, [action.todoListId]: [action.newTask.data.item, ...state[action.todoListId]]}
+            }
             return {...state, [action.todoListId]: [action.newTask.data.item, ...state[action.todoListId]]}
         }
         case "DELETE_TASK": {
@@ -116,6 +120,7 @@ export const createTasksTK = (todoListId: string, title: string): AppThunk => as
             dispatch(createTasksAC(todoListId, newTask.data))
         }
     } catch (e) {
+        console.log(e)
         networkErrorHandler(dispatch, e)
     }
 }

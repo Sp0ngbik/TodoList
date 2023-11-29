@@ -4,11 +4,13 @@ import {appSetInformMessageAC, appSetStatusAC} from "../../redux/reducers/app_re
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
 
-export const Notification = () => {
+export const Notification = React.memo(() => {
     const dispatch = useAppDispatch()
     const appStatus = useAppSelector((state) => state.app_reducer)
 
+
     useEffect(() => {
+        console.log('s')
         if (appStatus.informMessage && appStatus.status === 'failed') {
             toast.error(appStatus.informMessage)
         } else if (appStatus.informMessage && appStatus.status === 'succeeded') {
@@ -22,5 +24,5 @@ export const Notification = () => {
         })
     }, [appStatus, dispatch])
 
-    return <ToastContainer theme="dark" autoClose={1000}/>
-}
+    return <ToastContainer theme="dark" hideProgressBar={true} autoClose={1000}/>
+})

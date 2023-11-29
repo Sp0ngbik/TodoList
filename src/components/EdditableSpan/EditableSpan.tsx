@@ -11,37 +11,36 @@ const EditableSpan: FC<T_EditableSpan> = ({callbackFunc, prevTitle, disabled}) =
     const [errorStatus, setErrorStatus] = useState(false)
     const [editMode, setEditMode] = useState(false)
     const [title, setTitle] = useState(prevTitle)
-    // const onActivateEditMode = () => {
-    //     disabled ? setEditMode(false) : setEditMode(true)
-    // }
-    //
-    // const onDeactivateEditMode = () => {
-    //     if (title.trim()) {
-    //         setEditMode(false)
-    //         callbackFunc(title)
-    //     } else {
-    //         setErrorStatus(true)
-    //     }
-    // }
-    // const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    //     setTitle(e.currentTarget.value)
-    //     setErrorStatus(false)
-    // }
+    const onActivateEditMode = () => {
+        disabled ? setEditMode(false) : setEditMode(true)
+    }
+
+    const onDeactivateEditMode = () => {
+        if (title.trim()) {
+            setEditMode(false)
+            callbackFunc(title)
+        } else {
+            setErrorStatus(true)
+        }
+    }
+    const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.currentTarget.value)
+        setErrorStatus(false)
+    }
     return (
         editMode ?
             <div className={style.editSpanWrapper}>
                 <input
                     value={title}
-                    // onChange={onChangeHandler}
+                    onChange={onChangeHandler}
                     className={errorStatus ? style.error : ''}
                     autoFocus
-                    // onBlur={onDeactivateEditMode}
+                    onBlur={onDeactivateEditMode}
                 />
                 {errorStatus && <div className={style.error_text}>Error in field</div>}
             </div>
             :
-            <div>{prevTitle}</div>
-        // <div onDoubleClick={onActivateEditMode}>{title}</div>
+            <div onDoubleClick={onActivateEditMode}>{prevTitle}</div>
     );
 };
 
