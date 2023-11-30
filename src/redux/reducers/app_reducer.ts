@@ -1,3 +1,5 @@
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+
 export type T_ResponseStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 
 export type T_AppReducer = {
@@ -9,27 +11,18 @@ const initialState: T_AppReducer = {
     informMessage: null
 }
 
-type T_SetErrors = ReturnType<typeof appSetStatusAC>
-type T_SetInformMessage = ReturnType<typeof appSetInformMessageAC>
-type T_MainAppReducer = T_SetErrors | T_SetInformMessage
-
-export const app_reducer = (state = initialState, action: T_MainAppReducer) => {
-    switch (action.type) {
-        case "APP/SET_ERROR": {
-            return {...state, status: action.status}
+const appSlice = createSlice({
+    name: "app",
+    initialState,
+    reducers: {
+        appSetStatusAC: (state, action: PayloadAction<{ status: T_ResponseStatus }>) => {
+            state.status = action.payload.status
+        },
+        appSetInformMessageAC: (state, action: PayloadAction<{ informMessage: string | null }>) => {
+            state.informMessage = action.payload.informMessage
         }
-        case "APP/SET_INFORM_MESSAGE": {
-            return {...state, informMessage: action.informMessage}
-        }
-        default:
-            return state
     }
-}
+})
 
-export const appSetStatusAC = (status: T_ResponseStatus,) => {
-    return {type: 'APP/SET_ERROR', status,} as const
-}
-
-export const appSetInformMessageAC = (informMessage: string | null) => {
-    return {type: 'APP/SET_INFORM_MESSAGE', informMessage} as const
-}
+export const {appSetStatusAC, appSetInformMessageAC} = appSlice.actions
+export const app_reducer = appSlice.reducer

@@ -21,7 +21,7 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo((
 
     const dispatch = useAppDispatch()
 
-    const tasksData: T_TaskResponseItems[] = useAppSelector(state => state.tasks_reducer[todoListId])
+    const tasksData: T_TaskResponseItems[] = useAppSelector(state => state.tasks[todoListId])
 
     const newTitle: RefObject<HTMLInputElement> = useRef(null)
 
@@ -50,7 +50,7 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo((
     }, [todoListId, dispatch])
 
     const changeFilter = useCallback((filterValue: T_FilterValues) => {
-        dispatch(changeTodoListFilterAC(todoListId, filterValue))
+        dispatch(changeTodoListFilterAC({todoListId, filter:filterValue}))
     }, [todoListId, dispatch])
 
     const filterTasksData = () => {

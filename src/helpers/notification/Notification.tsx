@@ -6,20 +6,19 @@ import 'react-toastify/dist/ReactToastify.min.css';
 
 export const Notification = React.memo(() => {
     const dispatch = useAppDispatch()
-    const appStatus = useAppSelector((state) => state.app_reducer)
+    const appStatus = useAppSelector((state) => state.app)
 
 
     useEffect(() => {
-        console.log('s')
-        if (appStatus.informMessage && appStatus.status === 'failed') {
+-        if (appStatus.informMessage && appStatus.status === 'failed') {
             toast.error(appStatus.informMessage)
         } else if (appStatus.informMessage && appStatus.status === 'succeeded') {
             toast.success(appStatus.informMessage)
         }
         toast.onChange(({status}) => {
             if (status === 'added') {
-                dispatch(appSetStatusAC('idle'))
-                dispatch(appSetInformMessageAC(null))
+                dispatch(appSetStatusAC({status: 'idle'}))
+                dispatch(appSetInformMessageAC({informMessage: null}))
             }
         })
     }, [appStatus, dispatch])

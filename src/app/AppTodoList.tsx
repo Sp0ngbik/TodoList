@@ -14,7 +14,7 @@ const AppTodoList = React.memo(() => {
     useEffect(() => {
         dispatch(getTodoListsTK())
     }, [dispatch]);
-    const todoListsData: T_TodoListInitial[] = useAppSelector(data => data.todoList_reducer)
+    const todoListsData: T_TodoListInitial[] = useAppSelector(data => data.todoList)
     return (
         <div>
             <LoadingScale/>

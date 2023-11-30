@@ -15,12 +15,12 @@ export const networkErrorHandler = (dispatch: AppDispatch, err: unknown) => {
     } else {
         errorMessage = (err as Error).message
     }
-    dispatch(appSetStatusAC('failed'))
-    dispatch(appSetInformMessageAC(errorMessage))
+    dispatch(appSetStatusAC({status:'failed'}))
+    dispatch(appSetInformMessageAC({informMessage:errorMessage}))
 
 }
 
 export const localErrorHandler = (dispatch: AppDispatch, err: AxiosResponse) => {
-    dispatch(appSetStatusAC('failed'))
+    dispatch(appSetStatusAC({status:'failed'}))
     dispatch(appSetInformMessageAC(err.data.messages[0]))
 }
