@@ -24,5 +24,8 @@ const appSlice = createSlice({
     }
 })
 
-export const {appSetStatusAC, appSetInformMessageAC} = appSlice.actions
+export const {
+    appSetStatusAC,
+    appSetInformMessageAC
+} = appSlice.actions
 export const app_reducer = appSlice.reducer

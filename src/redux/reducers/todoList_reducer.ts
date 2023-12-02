@@ -14,13 +14,6 @@ export type T_TodoListInitial = T_TodoListCreate & {
 
 const initialState: T_TodoListInitial[] = []
 
-type T_GetTL = ReturnType<typeof getTodoListAC>
-type T_DeleteTL = ReturnType<typeof deleteTodoListAC>
-export type T_CreateTL = ReturnType<typeof addNewTodoListAC>
-type T_ChangeTitleTL = ReturnType<typeof editTodoListTitleAC>
-type T_ChangeFilterTL = ReturnType<typeof changeTodoListFilterAC>
-type T_ChangeEntityStatusTL = ReturnType<typeof changeTodoListEntityStatusAC>
-export type T_MainTL = T_GetTL | T_DeleteTL | T_CreateTL | T_ChangeTitleTL | T_ChangeFilterTL | T_ChangeEntityStatusTL
 
 export const todolistSlice = createSlice({
     name: 'todoList',

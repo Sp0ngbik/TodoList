@@ -10,7 +10,7 @@ export const Notification = React.memo(() => {
 
 
     useEffect(() => {
--        if (appStatus.informMessage && appStatus.status === 'failed') {
+     if (appStatus.informMessage && appStatus.status === 'failed') {
             toast.error(appStatus.informMessage)
         } else if (appStatus.informMessage && appStatus.status === 'succeeded') {
             toast.success(appStatus.informMessage)

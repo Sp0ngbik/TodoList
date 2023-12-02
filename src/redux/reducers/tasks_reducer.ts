@@ -1,4 +1,4 @@
-import { AppThunk, RootState} from "../store";
+import {AppThunk, RootState} from "../store";
 import {
     T_CreateTask,
     T_TaskResponseItems,
@@ -9,7 +9,7 @@ import {
     TasksStatus
 } from "../../api/task_API";
 import {appSetStatusAC, T_ResponseStatus} from "./app_reducer";
-import {addNewTodoListAC, deleteTodoListAC, T_CreateTL} from "./todoList_reducer";
+import {addNewTodoListAC, deleteTodoListAC} from "./todoList_reducer";
 import {localErrorHandler, networkErrorHandler} from "../../utils/errorsHandler";
 import {successHandler} from "../../utils/successHandler";
 import {createSlice, Dispatch, PayloadAction} from "@reduxjs/toolkit";
@@ -27,18 +27,7 @@ export type T_TasksReducer = {
     [todoListId: string]: T_TaskResponseItems[]
 }
 const initialState: T_TasksReducer = {}
-type T_GetTasks = ReturnType<typeof getTasksAC>
-type T_CreateTasks = ReturnType<typeof createTasksAC>
-type T_DeleteTask = ReturnType<typeof deleteTaskAC>
-type T_UpdateTaskStatusAC = ReturnType<typeof updateTaskStatusAC>
-type T_ChangeTaskEntityStatusAC = ReturnType<typeof changeTaskEntityStatusAC>
-export type T_MainTasks =
-    T_GetTasks
-    | T_CreateTL
-    | T_DeleteTask
-    | T_CreateTasks
-    | T_UpdateTaskStatusAC
-    | T_ChangeTaskEntityStatusAC
+
 
 export const taskSlice = createSlice({
     name: 'tasks',
@@ -93,7 +82,13 @@ export const taskSlice = createSlice({
 
 })
 
-export const {updateTaskStatusAC, getTasksAC, changeTaskEntityStatusAC, createTasksAC, deleteTaskAC} = taskSlice.actions
+export const {
+    updateTaskStatusAC,
+    getTasksAC,
+    changeTaskEntityStatusAC,
+    createTasksAC,
+    deleteTaskAC
+} = taskSlice.actions
 export const tasks_reducer = taskSlice.reducer
 ///////ASYNC
 export const getTasksTK = (todoListId: string): AppThunk => async (dispatch: Dispatch) => {
