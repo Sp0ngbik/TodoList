@@ -83,7 +83,6 @@ export const deleteTodoListTK = (todoListId: string): AppThunk => async (dispatc
     } catch (e) {
         networkErrorHandler(dispatch, e)
     }
-    // dispatch(appSetStatusAC('idle', null))
 }
 
 export const addNewTodoListTK = (title: string): AppThunk => async (dispatch: Dispatch) => {
