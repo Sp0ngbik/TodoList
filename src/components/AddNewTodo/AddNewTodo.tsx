@@ -1,6 +1,6 @@
 import React, {RefObject, useRef, useState} from 'react';
 import {useAppDispatch} from "../../hooks/hooks";
-import {addNewTodoListTK} from "../../redux/reducers/todoList_reducer";
+import {fetchAddNewTodoList} from "../../redux/reducers/todoList_reducer";
 import style from './addNewTodo.module.css'
 
 const AddNewTodo = () => {
@@ -9,7 +9,7 @@ const AddNewTodo = () => {
     const dispatch = useAppDispatch()
     const addNewTodoList = () => {
         if (newTitleForTodoList.current && !errorStatus) {
-            dispatch(addNewTodoListTK(newTitleForTodoList.current.value))
+            dispatch(fetchAddNewTodoList(newTitleForTodoList.current.value))
             newTitleForTodoList.current.value = ''
         }
     }

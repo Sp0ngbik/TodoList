@@ -1,5 +1,5 @@
 import React, {FC, useCallback} from 'react';
-import {deleteTaskTK, updateTaskFields} from "../../redux/reducers/tasks_reducer";
+import {fetchDeleteTask, fetchUpdateTaskField} from "../../redux/reducers/tasks_reducer";
 import {useAppDispatch} from "../../hooks/hooks";
 import style from './tasks.module.css'
 import {TasksStatus} from "../../api/task_API";
@@ -18,15 +18,15 @@ const Task: FC<T_Task> = ({title, id, todoListId, status, entityStatus}) => {
     const dispatch = useAppDispatch()
 
     const deleteTask = useCallback((taskId: string) => {
-        dispatch(deleteTaskTK(todoListId, taskId))
+        dispatch(fetchDeleteTask({todoListId, taskId}))
     }, [todoListId, dispatch])
 
     const changeStatus = useCallback((status: TasksStatus) => {
-        dispatch(updateTaskFields(todoListId, id, {status}))
+        dispatch(fetchUpdateTaskField({todoListId, taskId:id, newField: {status}}))
     }, [todoListId, id, dispatch])
 
     const updateTaskTitle = useCallback((title: string) => {
-        dispatch(updateTaskFields(todoListId, id, {title}))
+        dispatch(fetchUpdateTaskField({todoListId, taskId:id, newField: {title}}))
     }, [todoListId, id, dispatch])
 
     const isTaskDisabled = entityStatus === 'loading'

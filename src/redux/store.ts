@@ -10,18 +10,21 @@ import {configureStore} from "@reduxjs/toolkit";
 //     todoList_reducer: todoList_reducer,
 //     app_reducer: app_reducer
 // })
-const mainReducer ={
-    tasks_reducer: tasks_reducer,
-    todoList_reducer: todoList_reducer,
-    app_reducer: app_reducer
-}
+// const mainReducer = {
+//     tasks_reducer: tasks_reducer,
+//     todoList_reducer: todoList_reducer,
+//     app_reducer: app_reducer
+// }
 
 export const store = configureStore({
-    reducer:{
+    reducer: {
         tasks: tasks_reducer,
         todoList: todoList_reducer,
         app: app_reducer
-    }
+    },
+    middleware: (
+        getDefaultMiddleware) =>
+        getDefaultMiddleware().prepend(thunk)
 })
 export type AppDispatch = typeof store.dispatch
 export type RootState = ReturnType<typeof store.getState>

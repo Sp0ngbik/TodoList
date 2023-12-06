@@ -1,8 +1,8 @@
 import React, {RefObject, useCallback, useRef, useState} from "react";
 import style from './todoList.module.css'
 import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
-import {changeTodoListFilterAC, deleteTodoListTK, editTodoListTitleTK} from "../../redux/reducers/todoList_reducer";
-import {createTasksTK} from "../../redux/reducers/tasks_reducer";
+import {changeTodoListFilterAC, fetchDeleteTodoList, fetchTodoListTitle} from "../../redux/reducers/todoList_reducer";
+import {fetchCreateTask} from "../../redux/reducers/tasks_reducer";
 import {T_TaskResponseItems, TasksStatus} from "../../api/task_API";
 import Task from "../Task/Task";
 import EditableSpan from "../EdditableSpan/EditableSpan";
@@ -28,11 +28,11 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo((
     const [error, setError] = useState(false)
 
     const removeTodoListId = useCallback(() => {
-        dispatch(deleteTodoListTK(todoListId))
+        dispatch(fetchDeleteTodoList(todoListId))
     }, [todoListId, dispatch])
 
     const editTodoListTitle = useCallback((title: string) => {
-        dispatch(editTodoListTitleTK(todoListId, title))
+        dispatch(fetchTodoListTitle({todoListId, title}))
     }, [todoListId, dispatch])
 
     const addTask = useCallback(() => {
@@ -41,7 +41,7 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo((
             if (
                 newTitle.current.value.trim()
             ) {
-                dispatch(createTasksTK(todoListId, newTitle.current.value))
+                dispatch(fetchCreateTask({todoListId, title: newTitle.current.value}))
                 newTitle.current.value = ''
             } else {
                 setError(true)
@@ -50,7 +50,7 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo((
     }, [todoListId, dispatch])
 
     const changeFilter = useCallback((filterValue: T_FilterValues) => {
-        dispatch(changeTodoListFilterAC({todoListId, filter:filterValue}))
+        dispatch(changeTodoListFilterAC({todoListId, filter: filterValue}))
     }, [todoListId, dispatch])
 
     const filterTasksData = () => {

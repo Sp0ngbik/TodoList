@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from "../hooks/hooks";
-import {getTodoListsTK, T_TodoListInitial} from "../redux/reducers/todoList_reducer";
+import {fetchTodoLists, T_TodoListInitial} from "../redux/reducers/todoList_reducer";
 import AddNewTodo from "../components/AddNewTodo/AddNewTodo";
 import {TodoLists} from "../components/TodoList/TodoLists";
 import style from './app.module.css'
@@ -12,7 +12,7 @@ export type T_FilterValues = 'all' | 'completed' | 'inProgress'
 const AppTodoList = React.memo(() => {
     const dispatch = useAppDispatch()
     useEffect(() => {
-        dispatch(getTodoListsTK())
+        dispatch(fetchTodoLists())
     }, [dispatch]);
     const todoListsData: T_TodoListInitial[] = useAppSelector(data => data.todoList)
     return (
