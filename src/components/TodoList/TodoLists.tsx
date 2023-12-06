@@ -7,7 +7,7 @@ import EditableSpan from "../EdditableSpan/EditableSpan";
 import {T_FilterValues} from "../../app/AppTodoList";
 import {T_ResponseStatus} from "../../redux/reducers/app_reducer";
 import {selectTasksForTodos} from "../../redux/selectorsHandler";
-import {useTodoListWorker} from "./useTodoListWorker";
+import {useTodoListWorker} from "../../hooks/workers_hooks/useTodoListWorker";
 
 type T_TodoListsProps = {
     title: string,
@@ -20,9 +20,7 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo((
     {title, todoListId, filter, entityStatus}) => {
 
     const dispatch = useAppDispatch()
-
     const tasksData: T_TaskResponseItems[] = useAppSelector(selectTasksForTodos(todoListId))
-
     const newTitle: RefObject<HTMLInputElement> = useRef(null)
 
     const {

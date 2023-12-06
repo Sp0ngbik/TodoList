@@ -1,12 +1,12 @@
 import React, {useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from "../hooks/redux_hooks/hooks";
-import {fetchTodoLists} from "../redux/reducers/todoList_reducer";
 import AddNewTodo from "../components/AddNewTodo/AddNewTodo";
 import {TodoLists} from "../components/TodoList/TodoLists";
 import style from './app.module.css'
 import LoadingScale from "../helpers/loadingScale/LoadingScale";
 import {Notification} from "../helpers/notification/Notification";
 import {todoListSelector} from "../redux/selectorsHandler";
+import {fetchTodoLists} from "../redux/reducers/todoList_reducer";
 
 export type T_FilterValues = 'all' | 'completed' | 'inProgress'
 

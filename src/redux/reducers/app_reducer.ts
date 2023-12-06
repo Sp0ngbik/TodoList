@@ -1,4 +1,5 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {auth_API} from "../../api/auth_API";
 
 export type T_ResponseStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 
@@ -6,14 +7,17 @@ export type T_AppReducer = {
     status: T_ResponseStatus,
     informMessage: string | null
 }
-const initialState: T_AppReducer = {
-    status: 'idle',
-    informMessage: null
-}
+
+export const fetchInitApp = createAsyncThunk('app/init', async (arg, thunkAPI) => {
+    const response = await auth_API
+})
 
 const appSlice = createSlice({
     name: "app",
-    initialState,
+    initialState: {
+        status: 'idle',
+        informMessage: null
+    } as T_AppReducer,
     reducers: {
         appSetStatusAC: (state, action: PayloadAction<{ status: T_ResponseStatus }>) => {
             state.status = action.payload.status
