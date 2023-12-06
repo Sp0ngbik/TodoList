@@ -1,5 +1,5 @@
 import React, {RefObject, useRef, useState} from 'react';
-import {useAppDispatch} from "../../hooks/hooks";
+import {useAppDispatch} from "../../hooks/redux_hooks/hooks";
 import {fetchAddNewTodoList} from "../../redux/reducers/todoList_reducer";
 import style from './addNewTodo.module.css'
 

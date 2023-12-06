@@ -1,11 +1,12 @@
 import React, {useEffect} from 'react';
-import {useAppDispatch, useAppSelector} from "../hooks/hooks";
-import {fetchTodoLists, T_TodoListInitial} from "../redux/reducers/todoList_reducer";
+import {useAppDispatch, useAppSelector} from "../hooks/redux_hooks/hooks";
+import {fetchTodoLists} from "../redux/reducers/todoList_reducer";
 import AddNewTodo from "../components/AddNewTodo/AddNewTodo";
 import {TodoLists} from "../components/TodoList/TodoLists";
 import style from './app.module.css'
 import LoadingScale from "../helpers/loadingScale/LoadingScale";
 import {Notification} from "../helpers/notification/Notification";
+import {todoListSelector} from "../redux/selectorsHandler";
 
 export type T_FilterValues = 'all' | 'completed' | 'inProgress'
 
@@ -14,7 +15,7 @@ const AppTodoList = React.memo(() => {
     useEffect(() => {
         dispatch(fetchTodoLists())
     }, [dispatch]);
-    const todoListsData: T_TodoListInitial[] = useAppSelector(data => data.todoList)
+    const todoListsData = useAppSelector(todoListSelector)
     return (
         <div>
             <LoadingScale/>

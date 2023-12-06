@@ -1,5 +1,5 @@
 import React from 'react';
-import {useAppSelector} from "../../hooks/hooks";
+import {useAppSelector} from "../../hooks/redux_hooks/hooks";
 import style from './loadingScale.module.css'
 
 const LoadingScale = () => {

@@ -25,10 +25,7 @@ export const fetchTodoLists = createAsyncThunk('todoList/getTodoLists', async (a
         return rejectWithValue(null)
     }
 })
-export const fetchDeleteTodoList = createAsyncThunk('todoLists/deleteTodoList', async (todoListId: string, {
-    dispatch,
-    rejectWithValue
-}) => {
+export const fetchDeleteTodoList = createAsyncThunk('todoLists/deleteTodoList', async (todoListId: string, {dispatch, rejectWithValue}) => {
     dispatch(appSetStatusAC({status: 'loading'}))
     try {
         dispatch(changeTodoListEntityStatusAC({todoListId, status: 'loading'}))
@@ -40,10 +37,7 @@ export const fetchDeleteTodoList = createAsyncThunk('todoLists/deleteTodoList', 
         return rejectWithValue(null)
     }
 })
-export const fetchAddNewTodoList = createAsyncThunk('todoList/createTodoList', async (title: string, {
-    dispatch,
-    rejectWithValue
-}) => {
+export const fetchAddNewTodoList = createAsyncThunk('todoList/createTodoList', async (title: string, {dispatch, rejectWithValue}) => {
     dispatch(appSetStatusAC({status: 'loading'}))
     try {
         const newTL = await todolist_API.createTodoList(title)
@@ -52,8 +46,7 @@ export const fetchAddNewTodoList = createAsyncThunk('todoList/createTodoList', a
             return rejectWithValue(null)
         } else {
             successHandler(dispatch, 'TodoLists was added')
-            dispatch(appSetStatusAC({status: 'loading'}))
-
+            dispatch(appSetStatusAC({status: 'succeeded'}))
             return {newTL: newTL.data}
         }
     } catch (e) {
@@ -74,7 +67,8 @@ export const fetchTodoListTitle = createAsyncThunk('todoList/editTodoListTitle',
             successHandler(dispatch, 'TodoLists was edited')
             return {todoListId: arg.todoListId, newTitleTL: arg.title}
         }
-    } catch (e) {
+    } catch (e)
+    {
         networkErrorHandler(dispatch, e)
         return rejectWithValue(null)
     }

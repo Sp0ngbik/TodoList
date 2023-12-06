@@ -1,13 +1,13 @@
-import React, {RefObject, useCallback, useRef, useState} from "react";
+import React, {RefObject, useRef} from "react";
 import style from './todoList.module.css'
-import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
-import {changeTodoListFilterAC, fetchDeleteTodoList, fetchTodoListTitle} from "../../redux/reducers/todoList_reducer";
-import {fetchCreateTask} from "../../redux/reducers/tasks_reducer";
+import {useAppDispatch, useAppSelector} from "../../hooks/redux_hooks/hooks";
 import {T_TaskResponseItems, TasksStatus} from "../../api/task_API";
 import Task from "../Task/Task";
 import EditableSpan from "../EdditableSpan/EditableSpan";
 import {T_FilterValues} from "../../app/AppTodoList";
 import {T_ResponseStatus} from "../../redux/reducers/app_reducer";
+import {selectTasksForTodos} from "../../redux/selectorsHandler";
+import {useTodoListWorker} from "./useTodoListWorker";
 
 type T_TodoListsProps = {
     title: string,
@@ -21,37 +21,17 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo((
 
     const dispatch = useAppDispatch()
 
-    const tasksData: T_TaskResponseItems[] = useAppSelector(state => state.tasks[todoListId])
+    const tasksData: T_TaskResponseItems[] = useAppSelector(selectTasksForTodos(todoListId))
 
     const newTitle: RefObject<HTMLInputElement> = useRef(null)
 
-    const [error, setError] = useState(false)
-
-    const removeTodoListId = useCallback(() => {
-        dispatch(fetchDeleteTodoList(todoListId))
-    }, [todoListId, dispatch])
-
-    const editTodoListTitle = useCallback((title: string) => {
-        dispatch(fetchTodoListTitle({todoListId, title}))
-    }, [todoListId, dispatch])
-
-    const addTask = useCallback(() => {
-        if (newTitle.current) {
-            setError(false)
-            if (
-                newTitle.current.value.trim()
-            ) {
-                dispatch(fetchCreateTask({todoListId, title: newTitle.current.value}))
-                newTitle.current.value = ''
-            } else {
-                setError(true)
-            }
-        }
-    }, [todoListId, dispatch])
-
-    const changeFilter = useCallback((filterValue: T_FilterValues) => {
-        dispatch(changeTodoListFilterAC({todoListId, filter: filterValue}))
-    }, [todoListId, dispatch])
+    const {
+        removeTodoListId,
+        editTodoListTitle,
+        addTask,
+        changeFilter,
+        error
+    } = useTodoListWorker(dispatch, todoListId)
 
     const filterTasksData = () => {
         if (filter === 'completed') {
@@ -62,7 +42,6 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo((
             return tasksData
         }
     }
-
     const isEntityTodoListLoading = entityStatus === 'loading'
 
     return <div className={style.todoListWrapper}>
@@ -73,7 +52,7 @@ export const TodoLists: React.FC<T_TodoListsProps> = React.memo((
         <div>
             <div className={style.addTaskStyle}>
                 <input ref={newTitle} className={error ? style.error : ''}/>
-                <button onClick={addTask} disabled={isEntityTodoListLoading}>+</button>
+                <button onClick={() => addTask(newTitle)} disabled={isEntityTodoListLoading}>+</button>
                 {error && <div>Wrong value</div>}
             </div>
             {tasksData && filterTasksData().map((el) => (
