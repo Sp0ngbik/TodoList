@@ -1,10 +1,11 @@
 import {T_TodoListCreate, todolist_API} from "../../api/todolist_API";
-import {T_FilterValues} from "../../app/AppTodoList";
 import {fetchTasks} from "./tasks_reducer";
 import {appSetStatusAC, T_ResponseStatus} from "./app_reducer";
 import {localErrorHandler, networkErrorHandler} from "../../utils/errorsHandler";
 import {successHandler} from "../../utils/successHandler";
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
+
+export type T_FilterValues = 'all' | 'completed' | 'inProgress'
 
 export type T_TodoListInitial = T_TodoListCreate & {
     filter: T_FilterValues
@@ -25,7 +26,10 @@ export const fetchTodoLists = createAsyncThunk('todoList/getTodoLists', async (a
         return rejectWithValue(null)
     }
 })
-export const fetchDeleteTodoList = createAsyncThunk('todoLists/deleteTodoList', async (todoListId: string, {dispatch, rejectWithValue}) => {
+export const fetchDeleteTodoList = createAsyncThunk('todoLists/deleteTodoList', async (todoListId: string, {
+    dispatch,
+    rejectWithValue
+}) => {
     dispatch(appSetStatusAC({status: 'loading'}))
     try {
         dispatch(changeTodoListEntityStatusAC({todoListId, status: 'loading'}))
@@ -37,7 +41,10 @@ export const fetchDeleteTodoList = createAsyncThunk('todoLists/deleteTodoList', 
         return rejectWithValue(null)
     }
 })
-export const fetchAddNewTodoList = createAsyncThunk('todoList/createTodoList', async (title: string, {dispatch, rejectWithValue}) => {
+export const fetchAddNewTodoList = createAsyncThunk('todoList/createTodoList', async (title: string, {
+    dispatch,
+    rejectWithValue
+}) => {
     dispatch(appSetStatusAC({status: 'loading'}))
     try {
         const newTL = await todolist_API.createTodoList(title)
@@ -67,8 +74,7 @@ export const fetchTodoListTitle = createAsyncThunk('todoList/editTodoListTitle',
             successHandler(dispatch, 'TodoLists was edited')
             return {todoListId: arg.todoListId, newTitleTL: arg.title}
         }
-    } catch (e)
-    {
+    } catch (e) {
         networkErrorHandler(dispatch, e)
         return rejectWithValue(null)
     }
@@ -83,7 +89,10 @@ export const todolistSlice = createSlice({
             const todoList = state.findIndex(el => el.id === action.payload.todoListId)
             state[todoList].filter = action.payload.filter
         },
-        changeTodoListEntityStatusAC: (state, action: PayloadAction<{ todoListId: string, status: T_ResponseStatus }>) => {
+        changeTodoListEntityStatusAC: (state, action: PayloadAction<{
+            todoListId: string,
+            status: T_ResponseStatus
+        }>) => {
             const todoList = state.findIndex(el => el.id === action.payload.todoListId)
             state[todoList].entityStatus = action.payload.status
         }
@@ -91,20 +100,20 @@ export const todolistSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchTodoLists.fulfilled, (state, action) => {
-            state = action.payload.tlData.map(el => ({...el, entityStatus: 'idle', filter: 'all'}))
-            return state
-        })
+                state = action.payload.tlData.map(el => ({...el, entityStatus: 'idle', filter: 'all'}))
+                return state
+            })
             .addCase(fetchDeleteTodoList.fulfilled, (state, action) => {
-            const index = state.findIndex(el => el.id === action.payload.todoListId)
-            state.splice(index, 1)
-        })
+                const index = state.findIndex(el => el.id === action.payload.todoListId)
+                state.splice(index, 1)
+            })
             .addCase(fetchAddNewTodoList.fulfilled, (state, action) => {
-            state.unshift({...action.payload.newTL.data.item, entityStatus: 'idle', filter: 'all'})
-        })
+                state.unshift({...action.payload.newTL.data.item, entityStatus: 'idle', filter: 'all'})
+            })
             .addCase(fetchTodoListTitle.fulfilled, (state, action) => {
-            const todoList = state.findIndex(el => el.id === action.payload.todoListId)
-            state[todoList].title = action.payload.newTitleTL
-        })
+                const todoList = state.findIndex(el => el.id === action.payload.todoListId)
+                state[todoList].title = action.payload.newTitleTL
+            })
     }
 })
 

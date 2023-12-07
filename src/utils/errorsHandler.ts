@@ -1,4 +1,3 @@
-import {AppDispatch} from "../redux/store";
 import {appSetInformMessageAC, appSetStatusAC} from "../redux/reducers/app_reducer";
 import {AxiosResponse, isAxiosError} from "axios";
 import {Dispatch} from "@reduxjs/toolkit";

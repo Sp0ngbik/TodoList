@@ -1,34 +1,30 @@
 import React, {useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from "../hooks/redux_hooks/hooks";
-import AddNewTodo from "../components/AddNewTodo/AddNewTodo";
-import {TodoLists} from "../components/TodoList/TodoLists";
-import style from './app.module.css'
 import LoadingScale from "../helpers/loadingScale/LoadingScale";
 import {Notification} from "../helpers/notification/Notification";
-import {todoListSelector} from "../redux/selectorsHandler";
-import {fetchTodoLists} from "../redux/reducers/todoList_reducer";
+import TodoListContainer from "../components/TodoList/TodoListContainer";
+import {fetchInitApp} from "../redux/reducers/app_reducer";
+import {Route, Routes} from "react-router-dom";
+import Login from "../components/Login/Login";
 
-export type T_FilterValues = 'all' | 'completed' | 'inProgress'
 
 const AppTodoList = React.memo(() => {
     const dispatch = useAppDispatch()
     useEffect(() => {
-        dispatch(fetchTodoLists())
+        dispatch(fetchInitApp())
     }, [dispatch]);
-    const todoListsData = useAppSelector(todoListSelector)
+    const appInitStatus = useAppSelector(state => state.app.appInitialize)
+    if (!appInitStatus) {
+        return <div>LOADING</div>
+    }
     return (
         <div>
             <LoadingScale/>
             <Notification/>
-            <AddNewTodo/>
-            <div className={style.allTodosWrapper}>
-                {todoListsData.map(tl => (
-                    <div key={tl.id}>
-                        <TodoLists title={tl.title} todoListId={tl.id} filter={tl.filter}
-                                   entityStatus={tl.entityStatus}/>
-                    </div>
-                ))}
-            </div>
+            <Routes>
+                <Route path={'/'} element={<TodoListContainer/>}/>
+                <Route path={'/login'} element={<Login/>}/>
+            </Routes>
         </div>
     );
 })

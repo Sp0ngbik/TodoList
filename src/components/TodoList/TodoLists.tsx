@@ -4,10 +4,10 @@ import {useAppDispatch, useAppSelector} from "../../hooks/redux_hooks/hooks";
 import {T_TaskResponseItems, TasksStatus} from "../../api/task_API";
 import Task from "../Task/Task";
 import EditableSpan from "../EdditableSpan/EditableSpan";
-import {T_FilterValues} from "../../app/AppTodoList";
 import {T_ResponseStatus} from "../../redux/reducers/app_reducer";
 import {selectTasksForTodos} from "../../redux/selectorsHandler";
 import {useTodoListWorker} from "../../hooks/workers_hooks/useTodoListWorker";
+import {T_FilterValues} from "../../redux/reducers/todoList_reducer";
 
 type T_TodoListsProps = {
     title: string,

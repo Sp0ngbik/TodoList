@@ -1,8 +1,12 @@
 import {AppDispatch} from "../../redux/store";
 import {RefObject, useCallback, useState} from "react";
-import {changeTodoListFilterAC, fetchDeleteTodoList, fetchTodoListTitle} from "../../redux/reducers/todoList_reducer";
+import {
+    changeTodoListFilterAC,
+    fetchDeleteTodoList,
+    fetchTodoListTitle,
+    T_FilterValues
+} from "../../redux/reducers/todoList_reducer";
 import {fetchCreateTask} from "../../redux/reducers/tasks_reducer";
-import {T_FilterValues} from "../../app/AppTodoList";
 
 export const useTodoListWorker = (dispatch: AppDispatch, todoListId: string) => {
     const [error, setError] = useState(false)
