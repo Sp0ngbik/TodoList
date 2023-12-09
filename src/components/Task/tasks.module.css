@@ -1,8 +1,8 @@
 .task_wrapper {
-    margin: 10px 0;
-    padding: 0 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 20px;
+  margin: 10px 0;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 20px;
 }

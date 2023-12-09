@@ -1,51 +1,51 @@
 .formBlock {
-    position: relative;
-    display: flex;
-    width: 100%;
-    margin: 0 auto;
-    justify-content: center;
-    text-align: center;
+  position: relative;
+  display: flex;
+  width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+  text-align: center;
 }
 
 .formItems {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .formItems > input {
-    border-radius: 10px;
-    outline: none;
-    border: 1px solid black;
-    padding: 2px 10px;
-    font-size: 15px;
-    height: 25px;
-    transition: 0.2s ease-in-out;
+  border-radius: 10px;
+  outline: none;
+  border: 1px solid black;
+  padding: 2px 10px;
+  font-size: 15px;
+  height: 25px;
+  transition: 0.2s ease-in-out;
 }
 
 .formItems input {
-    margin: 10px 0;
+  margin: 10px 0;
 }
 
 .formItems input:hover {
-    box-shadow: black 1px 1px 15px;
+  box-shadow: black 1px 1px 15px;
 }
 
 .formItems button {
-    width: 120px;
-    height: 30px;
-    border-radius: 10px;
-    border: 1px solid black;
-    align-items: center;
-    justify-content: center;
-    margin: 20px auto;
-    transition: 0.2s ease-in-out;
+  width: 120px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid black;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto;
+  transition: 0.2s ease-in-out;
 }
 
 .formItems button:hover {
-    cursor: pointer;
-    box-shadow: black 1px 1px 15px;
+  cursor: pointer;
+  box-shadow: black 1px 1px 15px;
 }
 
 .errorMessage {
-    color: red;
+  color: red;
 }

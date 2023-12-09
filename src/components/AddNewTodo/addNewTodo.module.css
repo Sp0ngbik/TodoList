@@ -1,47 +1,47 @@
 .error {
-    border: 1px solid red;
+  border: 1px solid red;
 }
 
 .errorText {
-    color: red;
+  color: red;
 }
 
 .newTodoWrapper {
-    width: 100%;
-    margin: 40px auto;
-    align-items: center;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
+  width: 100%;
+  margin: 40px auto;
+  align-items: center;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .newTodoWrapper button {
-    width: 34px;
-    border: 1px solid black;
-    background-color: inherit;
-    border-left: none;
-    height: 34px;
-    border-radius: 0 10px 10px 0;
-    transition: 0.2s linear;
+  width: 34px;
+  border: 1px solid black;
+  background-color: inherit;
+  border-left: none;
+  height: 34px;
+  border-radius: 0 10px 10px 0;
+  transition: 0.2s linear;
 }
 
 .newTodoWrapper button:hover {
-    cursor: pointer;
-    background-color: #a79b9b;
-    color: red;
+  cursor: pointer;
+  background-color: #a79b9b;
+  color: red;
 }
 
 .newTodoWrapper input {
-    width: 250px;
-    padding-left: 10px;
-    height: 30px;
-    border-radius: 10px 0 0 10px;
-    outline: none;
-    border: 1px solid black;
-    color: #204c4c;
-    font-size: 20px;
+  width: 250px;
+  padding-left: 10px;
+  height: 30px;
+  border-radius: 10px 0 0 10px;
+  outline: none;
+  border: 1px solid black;
+  color: #204c4c;
+  font-size: 20px;
 }
 
 .newTodoBlock {
-    display: flex;
+  display: flex;
 }
