@@ -1,9 +1,9 @@
 import { T_TodoListCreate, todolist_API } from "../../api/todolist_API"
-import { fetchTasks } from "./tasks_reducer"
 import { AppActions, T_ResponseStatus } from "./app_reducer"
 import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
 import { successHandler } from "../../utils/successHandler"
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { asyncTasks } from "./tasks_reducer"
 
 export type T_FilterValues = "all" | "completed" | "inProgress"
 
@@ -13,22 +13,19 @@ export type T_TodoListInitial = T_TodoListCreate & {
 }
 const initialState: T_TodoListInitial[] = []
 
-export const fetchTodoLists = createAsyncThunk(
-  "todoList/getTodoLists",
-  async (arg, { dispatch, rejectWithValue }) => {
-    dispatch(AppActions.appSetStatusAC({ status: "loading" }))
-    try {
-      const todoListsData = await todolist_API.getTodoLists()
-      successHandler(dispatch, "TodoLists and tasks loaded")
-      todoListsData.data.map((el) => dispatch(fetchTasks(el.id)))
-      return { tlData: todoListsData.data }
-    } catch (e) {
-      networkErrorHandler(dispatch, e)
-      return rejectWithValue(null)
-    }
-  },
-)
-export const fetchDeleteTodoList = createAsyncThunk(
+const fetchTodoLists = createAsyncThunk("todoList/getTodoLists", async (arg, { dispatch, rejectWithValue }) => {
+  dispatch(AppActions.appSetStatusAC({ status: "loading" }))
+  try {
+    const todoListsData = await todolist_API.getTodoLists()
+    successHandler(dispatch, "TodoLists and tasks loaded")
+    todoListsData.data.map((el) => dispatch(asyncTasks.fetchTasks(el.id)))
+    return { tlData: todoListsData.data }
+  } catch (e) {
+    networkErrorHandler(dispatch, e)
+    return rejectWithValue(null)
+  }
+})
+const fetchDeleteTodoList = createAsyncThunk(
   "todoLists/deleteTodoList",
   async (todoListId: string, { dispatch, rejectWithValue }) => {
     dispatch(AppActions.appSetStatusAC({ status: "loading" }))
@@ -48,7 +45,7 @@ export const fetchDeleteTodoList = createAsyncThunk(
     }
   },
 )
-export const fetchAddNewTodoList = createAsyncThunk(
+const fetchAddNewTodoList = createAsyncThunk(
   "todoList/createTodoList",
   async (title: string, { dispatch, rejectWithValue }) => {
     dispatch(AppActions.appSetStatusAC({ status: "loading" }))
@@ -68,7 +65,7 @@ export const fetchAddNewTodoList = createAsyncThunk(
     }
   },
 )
-export const fetchTodoListTitle = createAsyncThunk(
+const fetchTodoListTitle = createAsyncThunk(
   "todoList/editTodoListTitle",
   async (
     arg: {
@@ -97,10 +94,7 @@ export const todolistSlice = createSlice({
   name: "todoList",
   initialState,
   reducers: {
-    changeTodoListFilterAC: (
-      state,
-      action: PayloadAction<{ todoListId: string; filter: T_FilterValues }>,
-    ) => {
+    changeTodoListFilterAC: (state, action: PayloadAction<{ todoListId: string; filter: T_FilterValues }>) => {
       const todoList = state.findIndex((el) => el.id === action.payload.todoListId)
       state[todoList].filter = action.payload.filter
     },

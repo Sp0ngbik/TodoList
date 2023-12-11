@@ -3,7 +3,7 @@ import { AppActions } from "./app_reducer"
 import { auth_API, T_AuthorizeData } from "../../api/auth_API"
 import { networkErrorHandler } from "../../utils/errorsHandler"
 
-export const fetchLogin = createAsyncThunk(
+const fetchLogin = createAsyncThunk(
   "auth/login",
   async (arg: { data: T_AuthorizeData }, { dispatch, rejectWithValue }) => {
     dispatch(AppActions.appSetStatusAC({ status: "loading" }))
@@ -26,7 +26,7 @@ export const fetchLogin = createAsyncThunk(
     }
   },
 )
-export const fetchLogout = createAsyncThunk("auth/logout", async (arg, { dispatch, rejectWithValue }) => {
+const fetchLogout = createAsyncThunk("auth/logout", async (arg, { dispatch, rejectWithValue }) => {
   dispatch(AppActions.appSetStatusAC({ status: "loading" }))
   try {
     const response = await auth_API.logOutMe()

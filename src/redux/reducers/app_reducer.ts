@@ -11,17 +11,14 @@ export type T_AppReducer = {
   appInitialize: boolean
 }
 
-export const fetchInitApp = createAsyncThunk(
-  "app/init",
-  async (arg, { dispatch, rejectWithValue }) => {
-    const response = await auth_API.authMe()
-    if (response.data.resultCode === 0) {
-      dispatch(AuthActions.setIsLoggedIn({ isLoggedIn: true }))
-    } else {
-      localErrorHandler(dispatch, response)
-    }
-  },
-)
+const fetchInitApp = createAsyncThunk("app/init", async (arg, { dispatch, rejectWithValue }) => {
+  const response = await auth_API.authMe()
+  if (response.data.resultCode === 0) {
+    dispatch(AuthActions.setIsLoggedIn({ isLoggedIn: true }))
+  } else {
+    localErrorHandler(dispatch, response)
+  }
+})
 
 const appSlice = createSlice({
   name: "app",
@@ -48,3 +45,5 @@ const appSlice = createSlice({
 export const AppActions = appSlice.actions
 
 export const app_reducer = appSlice.reducer
+
+export const asyncApp = { fetchInitApp }

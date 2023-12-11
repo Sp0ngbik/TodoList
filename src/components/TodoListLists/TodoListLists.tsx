@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react"
 import { useActions, useAppSelector } from "../../hooks/redux_hooks/hooks"
 import { todoListSelector } from "../../redux/selectorsHandler"
-import { asyncTodoList } from "../../redux/reducers/todoList_reducer"
+import { asyncTodoList } from "../../redux/reducers"
 import style from "../../app/app.module.css"
 import AddNewTodo from "../AddNewTodo/AddNewTodo"
 import { Navigate } from "react-router-dom"

@@ -1,12 +1,11 @@
 import React from "react"
-import { useAppDispatch } from "../../hooks/redux_hooks/hooks"
-import { fetchAddNewTodoList } from "../../redux/reducers/todoList_reducer"
+import { useActions } from "../../hooks/redux_hooks/hooks"
 import style from "./addNewTodo.module.css"
 import { useFormik } from "formik"
+import { asyncTodoList } from "../../redux/reducers"
 
 const AddNewTodo = () => {
-  const dispatch = useAppDispatch()
-
+  const { fetchAddNewTodoList } = useActions(asyncTodoList)
   const todoListFormik = useFormik({
     initialValues: {
       newTitleForTodoList: "",
@@ -17,7 +16,7 @@ const AddNewTodo = () => {
       }
     },
     onSubmit: (values) => {
-      dispatch(fetchAddNewTodoList(values.newTitleForTodoList))
+      fetchAddNewTodoList(values.newTitleForTodoList)
       todoListFormik.resetForm()
     },
   })

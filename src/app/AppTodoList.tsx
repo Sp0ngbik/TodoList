@@ -1,17 +1,17 @@
 import React, { useEffect } from "react"
-import { useAppDispatch, useAppSelector } from "../hooks/redux_hooks/hooks"
+import { useActions, useAppSelector } from "../hooks/redux_hooks/hooks"
 import LoadingScale from "../helpers/loadingScale/LoadingScale"
 import { Notification } from "../helpers/notification/Notification"
-import { fetchInitApp } from "../redux/reducers/app_reducer"
+import { asyncApp } from "../redux/reducers"
 import { Route, Routes } from "react-router-dom"
 import Login from "../components/Login/Login"
 import TodoListLists from "../components/TodoListLists/TodoListLists"
 
 const AppTodoList = React.memo(() => {
-  const dispatch = useAppDispatch()
+  const { fetchInitApp } = useActions(asyncApp)
   useEffect(() => {
-    dispatch(fetchInitApp())
-  }, [dispatch])
+    fetchInitApp()
+  }, [fetchInitApp])
   const appInitStatus = useAppSelector((state) => state.app.appInitialize)
   if (!appInitStatus) {
     return <div>LOADING</div>
