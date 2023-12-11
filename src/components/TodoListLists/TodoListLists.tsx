@@ -1,23 +1,24 @@
 import React, { useCallback, useEffect } from "react"
-import { useAppDispatch, useAppSelector } from "../../hooks/redux_hooks/hooks"
+import { useActions, useAppSelector } from "../../hooks/redux_hooks/hooks"
 import { todoListSelector } from "../../redux/selectorsHandler"
-import { fetchTodoLists } from "../../redux/reducers/todoList_reducer"
+import { asyncTodoList } from "../../redux/reducers/todoList_reducer"
 import style from "../../app/app.module.css"
-import { TodoLists } from "./TodoLists"
 import AddNewTodo from "../AddNewTodo/AddNewTodo"
 import { Navigate } from "react-router-dom"
-import { fetchLogout } from "../../redux/reducers/auth_reducer"
+import { asyncAuthActions } from "../../redux/reducers"
+import { TodoList } from "../TodoList/TodoLists"
 
-const TodoListContainer = () => {
-  const dispatch = useAppDispatch()
+const TodoListLists = () => {
+  const { fetchTodoLists } = useActions(asyncTodoList)
+  const { fetchLogout } = useActions(asyncAuthActions)
   useEffect(() => {
-    dispatch(fetchTodoLists())
-  }, [dispatch])
+    fetchTodoLists()
+  }, [fetchTodoLists])
   const todoListsData = useAppSelector(todoListSelector)
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
   const logOutHandler = useCallback(() => {
-    dispatch(fetchLogout())
-  }, [dispatch])
+    fetchLogout()
+  }, [fetchLogout])
   if (!isLoggedIn) {
     return <Navigate to={"/login"} />
   }
@@ -29,12 +30,7 @@ const TodoListContainer = () => {
       <div className={style.allTodosWrapper}>
         {todoListsData.map((tl) => (
           <div key={tl.id}>
-            <TodoLists
-              title={tl.title}
-              todoListId={tl.id}
-              filter={tl.filter}
-              entityStatus={tl.entityStatus}
-            />
+            <TodoList title={tl.title} todoListId={tl.id} filter={tl.filter} entityStatus={tl.entityStatus} />
           </div>
         ))}
       </div>
@@ -42,4 +38,4 @@ const TodoListContainer = () => {
   )
 }
 
-export default TodoListContainer
+export default TodoListLists

@@ -26,26 +26,23 @@ export const fetchLogin = createAsyncThunk(
     }
   },
 )
-export const fetchLogout = createAsyncThunk(
-  "auth/logout",
-  async (arg, { dispatch, rejectWithValue }) => {
-    dispatch(AppActions.appSetStatusAC({ status: "loading" }))
-    try {
-      const response = await auth_API.logOutMe()
-      if (response.data.resultCode === 0) {
-        return
-      } else {
-        networkErrorHandler(dispatch, response.data)
-        return rejectWithValue(null)
-      }
-    } catch (e) {
-      networkErrorHandler(dispatch, e)
+export const fetchLogout = createAsyncThunk("auth/logout", async (arg, { dispatch, rejectWithValue }) => {
+  dispatch(AppActions.appSetStatusAC({ status: "loading" }))
+  try {
+    const response = await auth_API.logOutMe()
+    if (response.data.resultCode === 0) {
+      return
+    } else {
+      networkErrorHandler(dispatch, response.data)
       return rejectWithValue(null)
-    } finally {
-      dispatch(AppActions.appSetStatusAC({ status: "succeeded" }))
     }
-  },
-)
+  } catch (e) {
+    networkErrorHandler(dispatch, e)
+    return rejectWithValue(null)
+  } finally {
+    dispatch(AppActions.appSetStatusAC({ status: "succeeded" }))
+  }
+})
 
 export const authSlice = createSlice({
   name: "auth",
@@ -70,3 +67,4 @@ export const authSlice = createSlice({
 
 export const authReducer = authSlice.reducer
 export const AuthActions = authSlice.actions
+export const asyncAuthActions = { fetchLogin, fetchLogout }

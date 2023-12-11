@@ -7,3 +7,5 @@ export const selectTasksForTodos = (id: string) =>
   createSelector([tasks], (allTasks) => {
     return allTasks[id]
   })
+
+export const isLoggedInSelector = (state: RootState) => state.auth.isLoggedIn

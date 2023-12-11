@@ -144,5 +144,10 @@ export const todolistSlice = createSlice({
 })
 
 export const todoList_reducer = todolistSlice.reducer
-
 export const TodoListActions = todolistSlice.actions
+export const asyncTodoList = {
+  fetchTodoLists,
+  fetchDeleteTodoList,
+  fetchAddNewTodoList,
+  fetchTodoListTitle,
+}

@@ -1,9 +1,10 @@
 import React from "react"
 import { useFormik } from "formik"
 import style from "./form.module.css"
-import { useAppDispatch, useAppSelector } from "../../hooks/redux_hooks/hooks"
-import { fetchLogin } from "../../redux/reducers/auth_reducer"
+import { useActions, useAppSelector } from "../../hooks/redux_hooks/hooks"
+import { asyncAuthActions } from "../../redux/reducers"
 import { Navigate } from "react-router-dom"
+import { isLoggedInSelector } from "../../redux/selectorsHandler"
 
 type T_FormikTypes = {
   email: string
@@ -12,8 +13,9 @@ type T_FormikTypes = {
 }
 
 const Login = () => {
-  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
-  const dispatch = useAppDispatch()
+  const isLoggedIn = useAppSelector(isLoggedInSelector)
+  const { fetchLogin } = useActions(asyncAuthActions)
+
   const formikHandler = useFormik({
     initialValues: {
       email: "",
@@ -31,7 +33,7 @@ const Login = () => {
       }
     },
     onSubmit: (values) => {
-      dispatch(fetchLogin({ data: values }))
+      fetchLogin({ data: values })
     },
   })
 
@@ -60,11 +62,7 @@ const Login = () => {
         {formikHandler.touched.password && formikHandler.errors.password && (
           <div className={style.errorMessage}>{formikHandler.errors.password}</div>
         )}
-        <input
-          placeholder={"Password"}
-          type={"password"}
-          {...formikHandler.getFieldProps("password")}
-        />
+        <input placeholder={"Password"} type={"password"} {...formikHandler.getFieldProps("password")} />
         <div>
           <input onChange={formikHandler.handleChange} type="checkbox" name="rememberMe" />
           <span> Remember me</span>

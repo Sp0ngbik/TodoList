@@ -1,69 +1,49 @@
-import React, { ChangeEvent, FC, useState } from "react"
+import React, { FC, useState } from "react"
 import style from "./editableSpan.module.css"
+import { useFormik } from "formik"
 
 type T_EditableSpan = {
-  callbackFunc: (title: string) => void
+  callbackFunc: (param: { title: string }) => void
   prevTitle: string
   disabled: boolean
 }
 
 const EditableSpan: FC<T_EditableSpan> = ({ callbackFunc, prevTitle, disabled }) => {
-  const [errorStatus, setErrorStatus] = useState(false)
+  // const [errorStatus, setErrorStatus] = useState(false)
   const [editMode, setEditMode] = useState(false)
-  const [title, setTitle] = useState(prevTitle)
+  // const [title, setTitle] = useState(prevTitle)
   const onActivateEditMode = () => {
     disabled ? setEditMode(false) : setEditMode(true)
   }
 
-  const onDeactivateEditMode = () => {
-    if (title.trim()) {
+  const editableFormik = useFormik({
+    initialValues: {
+      title: prevTitle,
+    },
+    validateOnBlur: true,
+    validate: (values) => {
+      if (values.title.trim().length <= 0) {
+        return { title: "Required" }
+      }
+    },
+    onSubmit: (values) => {
       setEditMode(false)
-      callbackFunc(title)
-    } else {
-      setErrorStatus(true)
-    }
-  }
-  const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.currentTarget.value)
-    setErrorStatus(false)
-  }
+      callbackFunc({ title: values.title })
+    },
+  })
+
   return editMode ? (
-    <div className={style.editSpanWrapper}>
-      <input
-        value={title}
-        onChange={onChangeHandler}
-        className={errorStatus ? style.error : ""}
-        autoFocus
-        onBlur={onDeactivateEditMode}
-      />
-      {errorStatus && <div className={style.error_text}>Error in field</div>}
-    </div>
+    <>
+      {editableFormik.touched.title && editableFormik.errors.title && <div>{editableFormik.errors.title}</div>}
+      <div className={style.editSpanWrapper}>
+        <form onSubmit={editableFormik.handleSubmit}>
+          <input {...editableFormik.getFieldProps("title")} autoFocus onBlur={editableFormik.submitForm} />
+        </form>
+      </div>
+    </>
   ) : (
     <div onDoubleClick={onActivateEditMode}>{prevTitle}</div>
   )
 }
 
 export default EditableSpan
-
-// const updateDeckHandler = (deckId: string) => {
-//     newEditValue &&
-//     dispatch(updateDeckTC(deckId, newEditValue))
-//     setEditMode(false)
-// }
-// const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-//     setNewEditValue(e.currentTarget.value)
-// }
-// const deleteDeckHandler = (deckId: string) => {
-//     dispatch(deleteDeckTC(deckId))
-// }
-// return (
-//     <li className={s.item}>
-//         <h3 className={s.title}>
-//
-//             {editMode ? <input
-//                 value={newEditValue}
-//                 onChange={onChangeHandler}
-//                 onBlur={() => {
-//                     updateDeckHandler(deck.id)
-//                 }}
-//             />

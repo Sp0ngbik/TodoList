@@ -1,10 +1,10 @@
 import React, { FC } from "react"
-import { useAppDispatch } from "../../hooks/redux_hooks/hooks"
+import { useActions } from "../../hooks/redux_hooks/hooks"
 import style from "./tasks.module.css"
 import { TasksStatus } from "../../api/task_API"
 import EditableSpan from "../EdditableSpan/EditableSpan"
 import { T_ResponseStatus } from "../../redux/reducers/app_reducer"
-import { useTaskWorker } from "../../hooks/workers_hooks/useTaskWorker"
+import { asyncTasks } from "../../redux/reducers"
 
 type T_Task = {
   id: string
@@ -15,9 +15,7 @@ type T_Task = {
 }
 
 const Task: FC<T_Task> = ({ title, id, todoListId, status, entityStatus }) => {
-  const dispatch = useAppDispatch()
-  const { deleteTask, updateTaskTitle, changeStatus } = useTaskWorker(dispatch, todoListId, id)
-
+  const { fetchUpdateTaskField, fetchDeleteTask } = useActions(asyncTasks)
   const isTaskDisabled = entityStatus === "loading"
   return (
     <div key={crypto.randomUUID()}>
@@ -26,12 +24,27 @@ const Task: FC<T_Task> = ({ title, id, todoListId, status, entityStatus }) => {
           disabled={isTaskDisabled}
           checked={status === TasksStatus.Completed}
           onChange={(e) =>
-            changeStatus(e.currentTarget.checked ? TasksStatus.Completed : TasksStatus.InProgress)
+            fetchUpdateTaskField({
+              todoListId,
+              taskId: id,
+              newField: {
+                status: e.currentTarget.checked ? TasksStatus.Completed : TasksStatus.InProgress,
+              },
+            })
           }
           type="checkbox"
         />
-        <EditableSpan disabled={isTaskDisabled} callbackFunc={updateTaskTitle} prevTitle={title} />
-        <button onClick={deleteTask} disabled={isTaskDisabled}>
+        <EditableSpan
+          disabled={isTaskDisabled}
+          callbackFunc={(newField: { title: string }) => fetchUpdateTaskField({ todoListId, taskId: id, newField })}
+          prevTitle={title}
+        />
+        <button
+          onClick={() => {
+            fetchDeleteTask({ todoListId, taskId: id })
+          }}
+          disabled={isTaskDisabled}
+        >
           X
         </button>
       </div>
