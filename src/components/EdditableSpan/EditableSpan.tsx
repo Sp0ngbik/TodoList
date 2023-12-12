@@ -9,9 +9,7 @@ type T_EditableSpan = {
 }
 
 const EditableSpan: FC<T_EditableSpan> = ({ callbackFunc, prevTitle, disabled }) => {
-  // const [errorStatus, setErrorStatus] = useState(false)
   const [editMode, setEditMode] = useState(false)
-  // const [title, setTitle] = useState(prevTitle)
   const onActivateEditMode = () => {
     disabled ? setEditMode(false) : setEditMode(true)
   }
@@ -32,17 +30,21 @@ const EditableSpan: FC<T_EditableSpan> = ({ callbackFunc, prevTitle, disabled })
     },
   })
 
-  return editMode ? (
-    <>
-      {editableFormik.touched.title && editableFormik.errors.title && <div>{editableFormik.errors.title}</div>}
-      <div className={style.editSpanWrapper}>
-        <form onSubmit={editableFormik.handleSubmit}>
-          <input {...editableFormik.getFieldProps("title")} autoFocus onBlur={editableFormik.submitForm} />
-        </form>
-      </div>
-    </>
-  ) : (
-    <div onDoubleClick={onActivateEditMode}>{prevTitle}</div>
+  return (
+    <div className={style.editSpanWrapper}>
+      {editMode ? (
+        <div>
+          {editableFormik.touched.title && editableFormik.errors.title && <div>{editableFormik.errors.title}</div>}
+          <div>
+            <form onSubmit={editableFormik.handleSubmit}>
+              <textarea {...editableFormik.getFieldProps("title")} autoFocus onBlur={editableFormik.submitForm} />
+            </form>
+          </div>
+        </div>
+      ) : (
+        <div onDoubleClick={onActivateEditMode}>{prevTitle}</div>
+      )}
+    </div>
   )
 }
 

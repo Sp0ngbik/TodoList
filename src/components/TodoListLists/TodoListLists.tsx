@@ -2,12 +2,11 @@ import React, { useCallback, useEffect } from "react"
 import { useActions, useAppSelector } from "../../hooks/redux_hooks/hooks"
 import { todoListSelector } from "../../redux/selectorsHandler"
 import { asyncTodoList } from "../../redux/reducers"
-import style from "../../app/app.module.css"
 import AddNewTodo from "../AddNewTodo/AddNewTodo"
 import { Navigate } from "react-router-dom"
 import { asyncAuthActions } from "../../redux/reducers"
 import { TodoList } from "../TodoList/TodoLists"
-
+import style from "./todoLists.module.css"
 const TodoListLists = () => {
   const { fetchTodoLists } = useActions(asyncTodoList)
   const { fetchLogout } = useActions(asyncAuthActions)

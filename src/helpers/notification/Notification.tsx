@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux_hooks/hooks"
-import { AppActions } from "../../redux/reducers/app_reducer"
+import { appActions } from "../../redux/reducers/app_reducer"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.min.css"
 
@@ -16,8 +16,8 @@ export const Notification = React.memo(() => {
     }
     toast.onChange(({ status }) => {
       if (status === "added") {
-        dispatch(AppActions.appSetStatusAC({ status: "idle" }))
-        dispatch(AppActions.appSetInformMessageAC({ informMessage: null }))
+        dispatch(appActions.appSetStatusAC({ status: "idle" }))
+        dispatch(appActions.appSetInformMessageAC({ informMessage: null }))
       }
     })
   }, [appStatus, dispatch])

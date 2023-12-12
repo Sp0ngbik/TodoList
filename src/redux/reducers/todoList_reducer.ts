@@ -1,5 +1,5 @@
 import { T_TodoListCreate, todolist_API } from "../../api/todolist_API"
-import { AppActions, T_ResponseStatus } from "./app_reducer"
+import { appActions, T_ResponseStatus } from "./app_reducer"
 import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
 import { successHandler } from "../../utils/successHandler"
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
@@ -14,7 +14,7 @@ export type T_TodoListInitial = T_TodoListCreate & {
 const initialState: T_TodoListInitial[] = []
 
 const fetchTodoLists = createAsyncThunk("todoList/getTodoLists", async (arg, { dispatch, rejectWithValue }) => {
-  dispatch(AppActions.appSetStatusAC({ status: "loading" }))
+  dispatch(appActions.appSetStatusAC({ status: "loading" }))
   try {
     const todoListsData = await todolist_API.getTodoLists()
     successHandler(dispatch, "TodoLists and tasks loaded")
@@ -28,10 +28,10 @@ const fetchTodoLists = createAsyncThunk("todoList/getTodoLists", async (arg, { d
 const fetchDeleteTodoList = createAsyncThunk(
   "todoLists/deleteTodoList",
   async (todoListId: string, { dispatch, rejectWithValue }) => {
-    dispatch(AppActions.appSetStatusAC({ status: "loading" }))
+    dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
       dispatch(
-        TodoListActions.changeTodoListEntityStatusAC({
+        todoListActions.changeTodoListEntityStatusAC({
           todoListId,
           status: "loading",
         }),
@@ -48,7 +48,7 @@ const fetchDeleteTodoList = createAsyncThunk(
 const fetchAddNewTodoList = createAsyncThunk(
   "todoList/createTodoList",
   async (title: string, { dispatch, rejectWithValue }) => {
-    dispatch(AppActions.appSetStatusAC({ status: "loading" }))
+    dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
       const newTL = await todolist_API.createTodoList(title)
       if (newTL.data.resultCode) {
@@ -56,7 +56,7 @@ const fetchAddNewTodoList = createAsyncThunk(
         return rejectWithValue(null)
       } else {
         successHandler(dispatch, "TodoLists was added")
-        dispatch(AppActions.appSetStatusAC({ status: "succeeded" }))
+        dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
         return { newTL: newTL.data }
       }
     } catch (e) {
@@ -105,6 +105,7 @@ export const todolistSlice = createSlice({
         status: T_ResponseStatus
       }>,
     ) => {
+      console.log("s")
       const todoList = state.findIndex((el) => el.id === action.payload.todoListId)
       state[todoList].entityStatus = action.payload.status
     },
@@ -138,7 +139,7 @@ export const todolistSlice = createSlice({
 })
 
 export const todoList_reducer = todolistSlice.reducer
-export const TodoListActions = todolistSlice.actions
+export const todoListActions = todolistSlice.actions
 export const asyncTodoList = {
   fetchTodoLists,
   fetchDeleteTodoList,

@@ -1,6 +1,6 @@
 import { RootState } from "../store"
 import { T_TaskResponseItems, T_UpdateTask, task_API, TasksStatus } from "../../api/task_API"
-import { AppActions, T_ResponseStatus } from "./app_reducer"
+import { appActions, T_ResponseStatus } from "./app_reducer"
 import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
 import { successHandler } from "../../utils/successHandler"
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
@@ -40,7 +40,7 @@ const fetchCreateTask = createAsyncThunk(
     },
     thunkAPI,
   ) => {
-    thunkAPI.dispatch(AppActions.appSetStatusAC({ status: "loading" }))
+    thunkAPI.dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
       const newTask = await task_API.createTask(arg.todoListId, arg.title)
       if (newTask.data.resultCode) {
@@ -65,10 +65,10 @@ const fetchDeleteTask = createAsyncThunk(
     },
     { dispatch, rejectWithValue },
   ) => {
-    dispatch(AppActions.appSetStatusAC({ status: "loading" }))
+    dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
       dispatch(
-        TasksActions.changeTaskEntityStatusAC({
+        tasksActions.changeTaskEntityStatusAC({
           todoListId: arg.todoListId,
           taskId: arg.taskId,
           status: "loading",
@@ -77,16 +77,16 @@ const fetchDeleteTask = createAsyncThunk(
       let deleteTask = await task_API.deleteTask(arg.todoListId, arg.taskId)
       if (deleteTask.data.resultCode) {
         localErrorHandler(dispatch, deleteTask)
-        dispatch(AppActions.appSetStatusAC({ status: "failed" }))
+        dispatch(appActions.appSetStatusAC({ status: "failed" }))
         return rejectWithValue(null)
       } else {
         successHandler(dispatch, "Task was deleted")
-        dispatch(AppActions.appSetStatusAC({ status: "succeeded" }))
+        dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
         return { todoListId: arg.todoListId, taskId: arg.taskId }
       }
     } catch (error) {
       networkErrorHandler(dispatch, error)
-      dispatch(AppActions.appSetStatusAC({ status: "failed" }))
+      dispatch(appActions.appSetStatusAC({ status: "failed" }))
       return rejectWithValue(null)
     }
   },
@@ -182,6 +182,6 @@ export const taskSlice = createSlice({
   },
 })
 
-export const TasksActions = taskSlice.actions
+export const tasksActions = taskSlice.actions
 export const tasks_reducer = taskSlice.reducer
 export const asyncTasks = { fetchTasks, fetchCreateTask, fetchDeleteTask, fetchUpdateTaskField }

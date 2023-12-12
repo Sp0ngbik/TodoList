@@ -6,7 +6,7 @@ import Task from "../Task/Task"
 import EditableSpan from "../EdditableSpan/EditableSpan"
 import { T_ResponseStatus } from "../../redux/reducers/app_reducer"
 import { selectTasksForTodos } from "../../redux/selectorsHandler"
-import { asyncTodoList, T_FilterValues, TodoListActions } from "../../redux/reducers/todoList_reducer"
+import { asyncTodoList, T_FilterValues, todoListActions } from "../../redux/reducers/todoList_reducer"
 import { asyncTasks } from "../../redux/reducers"
 import { useFormik } from "formik"
 
@@ -20,6 +20,7 @@ type T_TodoListsProps = {
 export const TodoList: React.FC<T_TodoListsProps> = React.memo(({ title, todoListId, filter, entityStatus }) => {
   const { fetchTodoListTitle, fetchDeleteTodoList } = useActions(asyncTodoList)
   const { fetchCreateTask } = useActions(asyncTasks)
+  const { changeTodoListFilterAC } = useActions(todoListActions)
   const tasksData: T_TaskResponseItems[] = useAppSelector(selectTasksForTodos(todoListId))
 
   const filterTasksData = () => {
@@ -46,6 +47,19 @@ export const TodoList: React.FC<T_TodoListsProps> = React.memo(({ title, todoLis
       fetchCreateTask({ todoListId, title: values.newTitle })
     },
   })
+
+  const filterButton = (selectedFilter: T_FilterValues) => {
+    return (
+      <button
+        className={selectedFilter === filter ? style.activeButton : ""}
+        onClick={() => {
+          changeTodoListFilterAC({ todoListId, filter: selectedFilter })
+        }}
+      >
+        {selectedFilter}
+      </button>
+    )
+  }
 
   return (
     <div className={style.todoListWrapper}>
@@ -83,39 +97,9 @@ export const TodoList: React.FC<T_TodoListsProps> = React.memo(({ title, todoLis
             />
           ))}
         <div className={style.buttonsFilterStyle}>
-          <button
-            className={filter === "all" ? style.activeButton : ""}
-            onClick={() => {
-              TodoListActions.changeTodoListFilterAC({
-                todoListId: todoListId,
-                filter: "all",
-              })
-            }}
-          >
-            All
-          </button>
-          <button
-            className={filter === "completed" ? style.activeButton : ""}
-            onClick={() => {
-              TodoListActions.changeTodoListFilterAC({
-                todoListId: todoListId,
-                filter: "completed",
-              })
-            }}
-          >
-            Completed
-          </button>
-          <button
-            className={filter === "inProgress" ? style.activeButton : ""}
-            onClick={() => {
-              TodoListActions.changeTodoListFilterAC({
-                todoListId: todoListId,
-                filter: "inProgress",
-              })
-            }}
-          >
-            InProgress
-          </button>
+          {filterButton("all")}
+          {filterButton("inProgress")}
+          {filterButton("completed")}
         </div>
       </div>
     </div>
