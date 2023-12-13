@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect } from "react"
 import { useActions, useAppSelector } from "../../hooks/redux_hooks/hooks"
 import { todoListSelector } from "../../redux/selectorsHandler"
-import { asyncTodoList } from "../../redux/reducers"
-import AddNewTodo from "../AddNewTodo/AddNewTodo"
+import { asyncAuthActions, asyncTodoList } from "../../redux/reducers"
+import AddNewItem from "../AddNewTodo/AddNewItem"
 import { Navigate } from "react-router-dom"
-import { asyncAuthActions } from "../../redux/reducers"
 import { TodoList } from "../TodoList/TodoLists"
 import style from "./todoLists.module.css"
+
 const TodoListLists = () => {
-  const { fetchTodoLists } = useActions(asyncTodoList)
+  const { fetchTodoLists, fetchAddNewTodoList } = useActions(asyncTodoList)
   const { fetchLogout } = useActions(asyncAuthActions)
   useEffect(() => {
     fetchTodoLists()
@@ -24,7 +24,7 @@ const TodoListLists = () => {
 
   return (
     <>
-      <AddNewTodo />
+      <AddNewItem callback={fetchAddNewTodoList} />
       <button onClick={logOutHandler}>LOGOUT</button>
       <div className={style.allTodosWrapper}>
         {todoListsData.map((tl) => (

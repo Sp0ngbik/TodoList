@@ -23,7 +23,6 @@ export const auth_API = {
     return instanceAxios.get<T_AuthResponse<T_AuthMeData>>("auth/me")
   },
   loginMe: (data: T_AuthorizeData) => {
-    console.log(data)
     return instanceAxios.post<T_AuthResponse<{ userId: number }>>("/auth/login", data)
   },
   logOutMe: () => {

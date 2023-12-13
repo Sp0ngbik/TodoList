@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { appActions } from "./app_reducer"
 import { auth_API, T_AuthorizeData } from "../../api/auth_API"
-import { networkErrorHandler } from "../../utils/errorsHandler"
+import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
 
 const fetchLogin = createAsyncThunk(
   "auth/login",
@@ -12,7 +12,7 @@ const fetchLogin = createAsyncThunk(
       if (response.data.resultCode === 0) {
         dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
       } else {
-        networkErrorHandler(dispatch, response.data)
+        localErrorHandler(dispatch, response)
         return rejectWithValue({
           errors: response.data.messages,
           fieldErrors: response.data.fieldsErrors,
@@ -21,8 +21,6 @@ const fetchLogin = createAsyncThunk(
     } catch (e) {
       networkErrorHandler(dispatch, e)
       return rejectWithValue({ errors: ["error"], fieldErrors: undefined })
-    } finally {
-      dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
     }
   },
 )
@@ -39,8 +37,6 @@ const fetchLogout = createAsyncThunk("auth/logout", async (arg, { dispatch, reje
   } catch (e) {
     networkErrorHandler(dispatch, e)
     return rejectWithValue(null)
-  } finally {
-    dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
   }
 })
 

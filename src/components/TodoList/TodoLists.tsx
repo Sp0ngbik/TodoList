@@ -8,7 +8,7 @@ import { T_ResponseStatus } from "../../redux/reducers/app_reducer"
 import { selectTasksForTodos } from "../../redux/selectorsHandler"
 import { asyncTodoList, T_FilterValues, todoListActions } from "../../redux/reducers/todoList_reducer"
 import { asyncTasks } from "../../redux/reducers"
-import { useFormik } from "formik"
+import AddNewItem from "../AddNewTodo/AddNewItem"
 
 type T_TodoListsProps = {
   title: string
@@ -32,21 +32,8 @@ export const TodoList: React.FC<T_TodoListsProps> = React.memo(({ title, todoLis
       return tasksData
     }
   }
-  const isEntityTodoListLoading = entityStatus === "loading"
 
-  const tasksFormik = useFormik({
-    initialValues: {
-      newTitle: "",
-    },
-    validate: (values) => {
-      if (values.newTitle.trim().length <= 0) {
-        return { newTitle: "Required" }
-      }
-    },
-    onSubmit: (values) => {
-      fetchCreateTask({ todoListId, title: values.newTitle })
-    },
-  })
+  const isEntityTodoListLoading = entityStatus === "loading"
 
   const filterButton = (selectedFilter: T_FilterValues) => {
     return (
@@ -60,6 +47,8 @@ export const TodoList: React.FC<T_TodoListsProps> = React.memo(({ title, todoLis
       </button>
     )
   }
+
+  const createTaskHandler = (arg: { title: string }) => fetchCreateTask({ todoListId, title: arg.title })
 
   return (
     <div className={style.todoListWrapper}>
@@ -79,12 +68,7 @@ export const TodoList: React.FC<T_TodoListsProps> = React.memo(({ title, todoLis
         </button>
       </div>
       <div>
-        <form onSubmit={tasksFormik.handleSubmit} className={style.addTaskStyle}>
-          <input {...tasksFormik.getFieldProps("newTitle")} />
-          <button type="submit" disabled={isEntityTodoListLoading}>
-            +
-          </button>
-        </form>
+        <AddNewItem callback={createTaskHandler} />
         {tasksData &&
           filterTasksData().map((el) => (
             <Task

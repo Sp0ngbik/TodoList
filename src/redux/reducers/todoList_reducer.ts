@@ -47,12 +47,12 @@ const fetchDeleteTodoList = createAsyncThunk(
 )
 const fetchAddNewTodoList = createAsyncThunk(
   "todoList/createTodoList",
-  async (title: string, { dispatch, rejectWithValue }) => {
+  async (arg: { title: string }, { dispatch, rejectWithValue }) => {
     dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
-      const newTL = await todolist_API.createTodoList(title)
+      const newTL = await todolist_API.createTodoList(arg.title)
       if (newTL.data.resultCode) {
-        networkErrorHandler(dispatch, newTL.data.messages[0])
+        localErrorHandler(dispatch, newTL)
         return rejectWithValue(null)
       } else {
         successHandler(dispatch, "TodoLists was added")

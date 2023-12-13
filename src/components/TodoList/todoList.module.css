@@ -10,12 +10,15 @@
   padding: 20px;
 }
 
-.todoListWrapper button {
-  height: 24px;
-}
 
 .todoList {
   display: flex;
+}
+
+.todoList button{
+  width: 25px;
+  height: 25px;
+  margin: 0 0 0 30px;
 }
 
 .error {
