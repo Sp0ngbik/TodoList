@@ -1,6 +1,6 @@
-import { T_TodoListCreate, todolist_API } from "../../api/todolist_API"
+import { T_TodoListCreate, T_TodoListPost, todolist_API } from "../../api/todolist_API"
 import { appActions, T_ResponseStatus } from "./app_reducer"
-import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
+import { localErrorHandler, networkErrorHandler, ThunkErrorAPI } from "../../utils/errorsHandler"
 import { successHandler } from "../../utils/successHandler"
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { asyncTasks } from "./tasks_reducer"
@@ -13,21 +13,23 @@ export type T_TodoListInitial = T_TodoListCreate & {
 }
 const initialState: T_TodoListInitial[] = []
 
-const fetchTodoLists = createAsyncThunk("todoList/getTodoLists", async (arg, { dispatch, rejectWithValue }) => {
-  dispatch(appActions.appSetStatusAC({ status: "loading" }))
-  try {
-    const todoListsData = await todolist_API.getTodoLists()
-    successHandler(dispatch, "TodoLists and tasks loaded")
-    todoListsData.data.map((el) => dispatch(asyncTasks.fetchTasks(el.id)))
-    return { tlData: todoListsData.data }
-  } catch (e) {
-    networkErrorHandler(dispatch, e)
-    return rejectWithValue(null)
-  }
-})
-const fetchDeleteTodoList = createAsyncThunk(
+const fetchTodoLists = createAsyncThunk<{ tlData: T_TodoListCreate[] }, undefined, ThunkErrorAPI>(
+  "todoList/getTodoLists",
+  async (arg, { dispatch, rejectWithValue }) => {
+    dispatch(appActions.appSetStatusAC({ status: "loading" }))
+    try {
+      const todoListsData = await todolist_API.getTodoLists()
+      successHandler(dispatch, "TodoLists and tasks loaded")
+      todoListsData.data.map((el) => dispatch(asyncTasks.fetchTasks(el.id)))
+      return { tlData: todoListsData.data }
+    } catch (e) {
+      return networkErrorHandler(dispatch, e, rejectWithValue)
+    }
+  },
+)
+const fetchDeleteTodoList = createAsyncThunk<{ todoListId: string }, string, ThunkErrorAPI>(
   "todoLists/deleteTodoList",
-  async (todoListId: string, { dispatch, rejectWithValue }) => {
+  async (todoListId, { dispatch, rejectWithValue }) => {
     dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
       dispatch(
@@ -40,55 +42,48 @@ const fetchDeleteTodoList = createAsyncThunk(
       successHandler(dispatch, "TodoLists was deleted")
       return { todoListId }
     } catch (e) {
-      networkErrorHandler(dispatch, e)
-      return rejectWithValue(null)
+      return networkErrorHandler(dispatch, e, rejectWithValue)
     }
   },
 )
-const fetchAddNewTodoList = createAsyncThunk(
+export const fetchAddNewTodoList = createAsyncThunk<{ newTL: T_TodoListPost }, string, ThunkErrorAPI>(
   "todoList/createTodoList",
-  async (arg: { title: string }, { dispatch, rejectWithValue }) => {
+  async (title, { dispatch, rejectWithValue }) => {
     dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
-      const newTL = await todolist_API.createTodoList(arg.title)
+      const newTL = await todolist_API.createTodoList(title)
       if (newTL.data.resultCode) {
-        localErrorHandler(dispatch, newTL)
-        return rejectWithValue(null)
+        return localErrorHandler(dispatch, newTL, rejectWithValue)
       } else {
         successHandler(dispatch, "TodoLists was added")
         dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
-        return { newTL: newTL.data }
+        return { newTL: newTL.data.data }
       }
     } catch (e) {
-      networkErrorHandler(dispatch, e)
-      return rejectWithValue(null)
+      return networkErrorHandler(dispatch, e, rejectWithValue)
     }
   },
 )
-const fetchTodoListTitle = createAsyncThunk(
-  "todoList/editTodoListTitle",
-  async (
-    arg: {
-      todoListId: string
-      title: string
-    },
-    { dispatch, rejectWithValue },
-  ) => {
-    try {
-      let updateTL = await todolist_API.updateTodoList(arg.todoListId, arg.title)
-      if (updateTL.data.resultCode) {
-        localErrorHandler(dispatch, updateTL)
-        return rejectWithValue(null)
-      } else {
-        successHandler(dispatch, "TodoLists was edited")
-        return { todoListId: arg.todoListId, newTitleTL: arg.title }
-      }
-    } catch (e) {
-      networkErrorHandler(dispatch, e)
-      return rejectWithValue(null)
-    }
+const fetchTodoListTitle = createAsyncThunk<
+  { todoListId: string; newTitleTL: string },
+  {
+    todoListId: string
+    title: string
   },
-)
+  ThunkErrorAPI
+>("todoList/editTodoListTitle", async ({ todoListId, title }, { dispatch, rejectWithValue }) => {
+  try {
+    let updateTL = await todolist_API.updateTodoList(todoListId, title)
+    if (updateTL.data.resultCode) {
+      return localErrorHandler(dispatch, updateTL, rejectWithValue)
+    } else {
+      successHandler(dispatch, "TodoLists was edited")
+      return { todoListId, newTitleTL: title }
+    }
+  } catch (e) {
+    return networkErrorHandler(dispatch, e, rejectWithValue)
+  }
+})
 
 export const todolistSlice = createSlice({
   name: "todoList",
@@ -105,7 +100,6 @@ export const todolistSlice = createSlice({
         status: T_ResponseStatus
       }>,
     ) => {
-      console.log("s")
       const todoList = state.findIndex((el) => el.id === action.payload.todoListId)
       state[todoList].entityStatus = action.payload.status
     },
@@ -126,7 +120,7 @@ export const todolistSlice = createSlice({
       })
       .addCase(fetchAddNewTodoList.fulfilled, (state, action) => {
         state.unshift({
-          ...action.payload.newTL.data.item,
+          ...action.payload.newTL.item,
           entityStatus: "idle",
           filter: "all",
         })

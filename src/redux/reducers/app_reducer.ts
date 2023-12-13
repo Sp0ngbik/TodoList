@@ -16,7 +16,7 @@ const fetchInitApp = createAsyncThunk("app/init", async (arg, { dispatch, reject
   if (response.data.resultCode === 0) {
     dispatch(authActions.setIsLoggedIn({ isLoggedIn: true }))
   } else {
-    localErrorHandler(dispatch, response)
+    localErrorHandler(dispatch, response, rejectWithValue)
   }
 })
 

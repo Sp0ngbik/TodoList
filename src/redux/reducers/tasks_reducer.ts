@@ -1,7 +1,7 @@
 import { RootState } from "../store"
-import { T_TaskResponseItems, T_UpdateTask, task_API, TasksStatus } from "../../api/task_API"
+import { T_CreateTask, T_TaskResponseItems, T_UpdateTask, task_API, TasksStatus } from "../../api/task_API"
 import { appActions, T_ResponseStatus } from "./app_reducer"
-import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
+import { localErrorHandler, networkErrorHandler, ThunkErrorAPI } from "../../utils/errorsHandler"
 import { successHandler } from "../../utils/successHandler"
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { asyncTodoList } from "./todoList_reducer"
@@ -20,116 +20,101 @@ export type T_TasksReducer = {
 }
 const initialState: T_TasksReducer = {}
 
-const fetchTasks = createAsyncThunk("tasks/getTasks", async (todoListId: string, thunkAPI) => {
+const fetchTasks = createAsyncThunk<{ tasks: T_TaskResponseItems[]; todoListId: string }, string, ThunkErrorAPI>(
+  "tasks/getTasks",
+  async (todoListId, thunkAPI) => {
+    try {
+      const tasksData = await task_API.getTask(todoListId)
+      const tasks = tasksData.data.items
+      return { tasks, todoListId }
+    } catch (e) {
+      return networkErrorHandler(thunkAPI.dispatch, e, thunkAPI.rejectWithValue)
+    }
+  },
+)
+
+export const fetchCreateTask = createAsyncThunk<
+  { todoListId: string; newTask: T_CreateTask },
+  { todoListId: string; title: string },
+  ThunkErrorAPI
+>("tasks/createTask", async ({ todoListId, title }, thunkAPI) => {
+  thunkAPI.dispatch(appActions.appSetStatusAC({ status: "loading" }))
   try {
-    const tasksData = await task_API.getTask(todoListId)
-    const tasks = tasksData.data.items
-    return { tasks, todoListId }
+    const newTask = await task_API.createTask(todoListId, title)
+    if (newTask.data.resultCode) {
+      return localErrorHandler(thunkAPI.dispatch, newTask, thunkAPI.rejectWithValue)
+    } else {
+      successHandler(thunkAPI.dispatch, "Task added")
+      return { todoListId, newTask: newTask.data }
+    }
   } catch (e) {
-    networkErrorHandler(thunkAPI.dispatch, e)
-    return thunkAPI.rejectWithValue(null)
+    return networkErrorHandler(thunkAPI.dispatch, e, thunkAPI.rejectWithValue)
   }
 })
-
-const fetchCreateTask = createAsyncThunk(
-  "tasks/createTask",
-  async (
-    arg: {
-      todoListId: string
-      title: string
-    },
-    thunkAPI,
-  ) => {
-    thunkAPI.dispatch(appActions.appSetStatusAC({ status: "loading" }))
+const fetchDeleteTask = createAsyncThunk<
+  { todoListId: string; taskId: string },
+  { todoListId: string; taskId: string },
+  ThunkErrorAPI
+>("tasks/deleteTask", async ({ todoListId, taskId }, { dispatch, rejectWithValue }) => {
+  dispatch(appActions.appSetStatusAC({ status: "loading" }))
+  try {
+    dispatch(
+      tasksActions.changeTaskEntityStatusAC({
+        todoListId: todoListId,
+        taskId: taskId,
+        status: "loading",
+      }),
+    )
+    let deleteTask = await task_API.deleteTask(todoListId, taskId)
+    if (deleteTask.data.resultCode) {
+      dispatch(appActions.appSetStatusAC({ status: "failed" }))
+      return localErrorHandler(dispatch, deleteTask, rejectWithValue)
+    } else {
+      successHandler(dispatch, "Task was deleted")
+      dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
+      return { todoListId, taskId }
+    }
+  } catch (error) {
+    dispatch(appActions.appSetStatusAC({ status: "failed" }))
+    return networkErrorHandler(dispatch, error, rejectWithValue)
+  }
+})
+const fetchUpdateTaskField = createAsyncThunk<
+  { todoListId: string; taskId: string; taskModel: T_UpdateTask },
+  { todoListId: string; taskId: string; newField: T_PutTask },
+  any
+>("tasks/updateField", async ({ todoListId, taskId, newField }, thunkAPI) => {
+  const state = thunkAPI.getState() as RootState
+  const model: T_TaskResponseItems[] = state.tasks[todoListId]
+  let task = model.find((el) => el.id === taskId)
+  if (task) {
+    const taskModel: T_UpdateTask = {
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      deadline: task.deadLine,
+      priority: task.priority,
+      startDate: task.startDate,
+      completed: false,
+      ...newField,
+    }
     try {
-      const newTask = await task_API.createTask(arg.todoListId, arg.title)
+      let newTask = await task_API.updateTask(todoListId, taskId, taskModel)
       if (newTask.data.resultCode) {
-        localErrorHandler(thunkAPI.dispatch, newTask)
-        return thunkAPI.rejectWithValue(null)
+        return localErrorHandler(thunkAPI.dispatch, newTask, thunkAPI.rejectWithValue)
       } else {
-        successHandler(thunkAPI.dispatch, "Task added")
-        return { todoListId: arg.todoListId, newTask: newTask.data }
+        successHandler(thunkAPI.dispatch, "Task was updated")
+        return {
+          todoListId,
+          taskId,
+          taskModel: newField,
+        }
       }
     } catch (e) {
-      networkErrorHandler(thunkAPI.dispatch, e)
-      return thunkAPI.rejectWithValue(null)
+      return networkErrorHandler(thunkAPI.dispatch, e, thunkAPI.rejectWithValue)
     }
-  },
-)
-const fetchDeleteTask = createAsyncThunk(
-  "tasks/deleteTask",
-  async (
-    arg: {
-      todoListId: string
-      taskId: string
-    },
-    { dispatch, rejectWithValue },
-  ) => {
-    dispatch(appActions.appSetStatusAC({ status: "loading" }))
-    try {
-      dispatch(
-        tasksActions.changeTaskEntityStatusAC({
-          todoListId: arg.todoListId,
-          taskId: arg.taskId,
-          status: "loading",
-        }),
-      )
-      let deleteTask = await task_API.deleteTask(arg.todoListId, arg.taskId)
-      if (deleteTask.data.resultCode) {
-        localErrorHandler(dispatch, deleteTask)
-        dispatch(appActions.appSetStatusAC({ status: "failed" }))
-        return rejectWithValue(null)
-      } else {
-        successHandler(dispatch, "Task was deleted")
-        dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
-        return { todoListId: arg.todoListId, taskId: arg.taskId }
-      }
-    } catch (error) {
-      networkErrorHandler(dispatch, error)
-      dispatch(appActions.appSetStatusAC({ status: "failed" }))
-      return rejectWithValue(null)
-    }
-  },
-)
-const fetchUpdateTaskField = createAsyncThunk(
-  "tasks/updateField",
-  async (arg: { todoListId: string; taskId: string; newField: T_PutTask }, thunkAPI) => {
-    const state = thunkAPI.getState() as RootState
-    const model: T_TaskResponseItems[] = state.tasks[arg.todoListId]
-    let task = model.find((el) => el.id === arg.taskId)
-    if (task) {
-      const taskModel: T_UpdateTask = {
-        title: task.title,
-        description: task.description,
-        status: task.status,
-        deadline: task.deadLine,
-        priority: task.priority,
-        startDate: task.startDate,
-        completed: false,
-        ...arg.newField,
-      }
-      try {
-        let newTask = await task_API.updateTask(arg.todoListId, arg.taskId, taskModel)
-        if (newTask.data.resultCode) {
-          localErrorHandler(thunkAPI.dispatch, newTask)
-          return thunkAPI.rejectWithValue(null)
-        } else {
-          successHandler(thunkAPI.dispatch, "Task was updated")
-          return {
-            todolisId: arg.todoListId,
-            taskId: arg.taskId,
-            taskModel: arg.newField,
-          }
-        }
-      } catch (e) {
-        networkErrorHandler(thunkAPI.dispatch, e)
-        return thunkAPI.rejectWithValue(null)
-      }
-    } else {
-      return thunkAPI.rejectWithValue(null)
-    }
-  },
-)
+  }
+})
 export const taskSlice = createSlice({
   name: "tasks",
   initialState,
@@ -149,7 +134,7 @@ export const taskSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(asyncTodoList.fetchAddNewTodoList.fulfilled, (state, action) => {
-        state[action.payload.newTL.data.item.id] = []
+        state[action.payload.newTL.item.id] = []
       })
       .addCase(asyncTodoList.fetchDeleteTodoList.fulfilled, (state, action) => {
         delete state[action.payload.todoListId]
@@ -173,9 +158,9 @@ export const taskSlice = createSlice({
         state[action.payload.todoListId].splice(index, 1)
       })
       .addCase(fetchUpdateTaskField.fulfilled, (state, action) => {
-        const task = state[action.payload.todolisId].findIndex((el) => el.id === action.payload.taskId)
-        state[action.payload.todolisId][task] = {
-          ...state[action.payload.todolisId][task],
+        const task = state[action.payload.todoListId].findIndex((el) => el.id === action.payload.taskId)
+        state[action.payload.todoListId][task] = {
+          ...state[action.payload.todoListId][task],
           ...action.payload.taskModel,
         }
       })

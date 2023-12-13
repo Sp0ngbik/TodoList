@@ -33,7 +33,7 @@ export const todolist_API = {
     return instanceAxios.get<T_TodoListCreate[]>("todo-lists")
   },
   createTodoList(title: string) {
-    return instanceAxios.post<T_TodoListResponse<T_TodoListPost>>("todo-lists", { title: title })
+    return instanceAxios.post<T_TodoListResponse<T_TodoListPost>>("todo-lists", title)
   },
   deleteTodoList(todoListId: string) {
     return instanceAxios.delete<T_TodoListResponse>(`todo-lists/${todoListId}`)

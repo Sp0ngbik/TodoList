@@ -3,7 +3,7 @@ import { appActions } from "./app_reducer"
 import { auth_API, T_AuthorizeData } from "../../api/auth_API"
 import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
 
-const fetchLogin = createAsyncThunk(
+export const fetchLogin = createAsyncThunk(
   "auth/login",
   async (arg: { data: T_AuthorizeData }, { dispatch, rejectWithValue }) => {
     dispatch(appActions.appSetStatusAC({ status: "loading" }))
@@ -12,15 +12,10 @@ const fetchLogin = createAsyncThunk(
       if (response.data.resultCode === 0) {
         dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
       } else {
-        localErrorHandler(dispatch, response)
-        return rejectWithValue({
-          errors: response.data.messages,
-          fieldErrors: response.data.fieldsErrors,
-        })
+        return localErrorHandler(dispatch, response, rejectWithValue)
       }
     } catch (e) {
-      networkErrorHandler(dispatch, e)
-      return rejectWithValue({ errors: ["error"], fieldErrors: undefined })
+      return networkErrorHandler(dispatch, e, rejectWithValue)
     }
   },
 )
@@ -31,12 +26,10 @@ const fetchLogout = createAsyncThunk("auth/logout", async (arg, { dispatch, reje
     if (response.data.resultCode === 0) {
       return
     } else {
-      networkErrorHandler(dispatch, response.data)
-      return rejectWithValue(null)
+      return networkErrorHandler(dispatch, response.data, rejectWithValue)
     }
   } catch (e) {
-    networkErrorHandler(dispatch, e)
-    return rejectWithValue(null)
+    return networkErrorHandler(dispatch, e, rejectWithValue)
   }
 })
 

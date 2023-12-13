@@ -6,9 +6,10 @@ import AddNewItem from "../AddNewTodo/AddNewItem"
 import { Navigate } from "react-router-dom"
 import { TodoList } from "../TodoList/TodoLists"
 import style from "./todoLists.module.css"
+import { fetchAddNewTodoList } from "../../redux/reducers/todoList_reducer"
 
 const TodoListLists = () => {
-  const { fetchTodoLists, fetchAddNewTodoList } = useActions(asyncTodoList)
+  const { fetchTodoLists } = useActions(asyncTodoList)
   const { fetchLogout } = useActions(asyncAuthActions)
   useEffect(() => {
     fetchTodoLists()

@@ -7,8 +7,8 @@ import EditableSpan from "../EdditableSpan/EditableSpan"
 import { T_ResponseStatus } from "../../redux/reducers/app_reducer"
 import { selectTasksForTodos } from "../../redux/selectorsHandler"
 import { asyncTodoList, T_FilterValues, todoListActions } from "../../redux/reducers/todoList_reducer"
-import { asyncTasks } from "../../redux/reducers"
 import AddNewItem from "../AddNewTodo/AddNewItem"
+import { fetchCreateTask } from "../../redux/reducers/tasks_reducer"
 
 type T_TodoListsProps = {
   title: string
@@ -19,7 +19,6 @@ type T_TodoListsProps = {
 
 export const TodoList: React.FC<T_TodoListsProps> = React.memo(({ title, todoListId, filter, entityStatus }) => {
   const { fetchTodoListTitle, fetchDeleteTodoList } = useActions(asyncTodoList)
-  const { fetchCreateTask } = useActions(asyncTasks)
   const { changeTodoListFilterAC } = useActions(todoListActions)
   const tasksData: T_TaskResponseItems[] = useAppSelector(selectTasksForTodos(todoListId))
 
