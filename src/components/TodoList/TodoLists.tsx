@@ -76,6 +76,7 @@ export const TodoList: React.FC<T_TodoListsProps> = React.memo(({ title, todoLis
               title={el.title}
               todoListId={todoListId}
               status={el.status}
+              isEntityTodoListLoading={isEntityTodoListLoading}
               entityStatus={el.entityTaskStatus}
             />
           ))}

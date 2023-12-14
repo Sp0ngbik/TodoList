@@ -22,13 +22,13 @@ const initialState: T_TasksReducer = {}
 
 const fetchTasks = createAsyncThunk<{ tasks: T_TaskResponseItems[]; todoListId: string }, string, ThunkErrorAPI>(
   "tasks/getTasks",
-  async (todoListId, thunkAPI) => {
+  async (todoListId, { dispatch, rejectWithValue }) => {
     try {
       const tasksData = await task_API.getTask(todoListId)
       const tasks = tasksData.data.items
       return { tasks, todoListId }
     } catch (e) {
-      return networkErrorHandler(thunkAPI.dispatch, e, thunkAPI.rejectWithValue)
+      return networkErrorHandler(dispatch, e, rejectWithValue)
     }
   },
 )
@@ -37,18 +37,18 @@ export const fetchCreateTask = createAsyncThunk<
   { todoListId: string; newTask: T_CreateTask },
   { todoListId: string; title: string },
   ThunkErrorAPI
->("tasks/createTask", async ({ todoListId, title }, thunkAPI) => {
-  thunkAPI.dispatch(appActions.appSetStatusAC({ status: "loading" }))
+>("tasks/createTask", async ({ todoListId, title }, { dispatch, rejectWithValue }) => {
+  dispatch(appActions.appSetStatusAC({ status: "loading" }))
   try {
     const newTask = await task_API.createTask(todoListId, title)
     if (newTask.data.resultCode) {
-      return localErrorHandler(thunkAPI.dispatch, newTask, thunkAPI.rejectWithValue)
+      return localErrorHandler(dispatch, newTask, rejectWithValue, false)
     } else {
-      successHandler(thunkAPI.dispatch, "Task added")
+      successHandler(dispatch, "Task added")
       return { todoListId, newTask: newTask.data }
     }
   } catch (e) {
-    return networkErrorHandler(thunkAPI.dispatch, e, thunkAPI.rejectWithValue)
+    return networkErrorHandler(dispatch, e, rejectWithValue)
   }
 })
 const fetchDeleteTask = createAsyncThunk<
@@ -75,16 +75,15 @@ const fetchDeleteTask = createAsyncThunk<
       return { todoListId, taskId }
     }
   } catch (error) {
-    dispatch(appActions.appSetStatusAC({ status: "failed" }))
     return networkErrorHandler(dispatch, error, rejectWithValue)
   }
 })
 const fetchUpdateTaskField = createAsyncThunk<
   { todoListId: string; taskId: string; taskModel: T_UpdateTask },
   { todoListId: string; taskId: string; newField: T_PutTask },
-  any
->("tasks/updateField", async ({ todoListId, taskId, newField }, thunkAPI) => {
-  const state = thunkAPI.getState() as RootState
+  ThunkErrorAPI
+>("tasks/updateField", async ({ todoListId, taskId, newField }, { dispatch, getState, rejectWithValue }) => {
+  const state = getState() as RootState
   const model: T_TaskResponseItems[] = state.tasks[todoListId]
   let task = model.find((el) => el.id === taskId)
   if (task) {
@@ -101,9 +100,9 @@ const fetchUpdateTaskField = createAsyncThunk<
     try {
       let newTask = await task_API.updateTask(todoListId, taskId, taskModel)
       if (newTask.data.resultCode) {
-        return localErrorHandler(thunkAPI.dispatch, newTask, thunkAPI.rejectWithValue)
+        return localErrorHandler(dispatch, newTask, rejectWithValue)
       } else {
-        successHandler(thunkAPI.dispatch, "Task was updated")
+        successHandler(dispatch, "Task was updated")
         return {
           todoListId,
           taskId,
@@ -111,7 +110,7 @@ const fetchUpdateTaskField = createAsyncThunk<
         }
       }
     } catch (e) {
-      return networkErrorHandler(thunkAPI.dispatch, e, thunkAPI.rejectWithValue)
+      return networkErrorHandler(dispatch, e, rejectWithValue)
     }
   }
 })

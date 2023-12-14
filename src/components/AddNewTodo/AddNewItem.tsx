@@ -22,9 +22,7 @@ const AddNewItem: FC<T_AddNewItem> = ({ callback }) => {
     },
     onSubmit: async (values, formikHelpers: FormikHelpers<{ newItemTitle: string }>) => {
       const action = await dispatch(callback({ title: values.newItemTitle }))
-      // callback({ title: values.newItemTitle })
       if (fetchAddNewTodoList.rejected.match(action)) {
-        console.log(action.payload?.errors)
         formikHelpers.setFieldError("newItemTitle", action.payload?.errors)
       } else if (fetchCreateTask.rejected.match(action)) {
         formikHelpers.setFieldError("newItemTitle", action.payload?.errors)
@@ -33,7 +31,6 @@ const AddNewItem: FC<T_AddNewItem> = ({ callback }) => {
       }
     },
   })
-  console.log(addItemFormik.errors)
   return (
     <div className={style.newTodoWrapper}>
       <form className={style.newTodoBlock} onSubmit={addItemFormik.handleSubmit}>

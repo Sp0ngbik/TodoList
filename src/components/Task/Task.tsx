@@ -12,16 +12,17 @@ type T_Task = {
   todoListId: string
   status: TasksStatus
   entityStatus: T_ResponseStatus
+  isEntityTodoListLoading: boolean
 }
 
-const Task: FC<T_Task> = ({ title, id, todoListId, status, entityStatus }) => {
+const Task: FC<T_Task> = ({ title, id, todoListId, status, entityStatus, isEntityTodoListLoading }) => {
   const { fetchUpdateTaskField, fetchDeleteTask } = useActions(asyncTasks)
   const isTaskDisabled = entityStatus === "loading"
   return (
     <div key={crypto.randomUUID()}>
       <div className={style.task_wrapper}>
         <input
-          disabled={isTaskDisabled}
+          disabled={isTaskDisabled || isEntityTodoListLoading}
           checked={status === TasksStatus.Completed}
           onChange={(e) =>
             fetchUpdateTaskField({
@@ -35,7 +36,7 @@ const Task: FC<T_Task> = ({ title, id, todoListId, status, entityStatus }) => {
           type="checkbox"
         />
         <EditableSpan
-          disabled={isTaskDisabled}
+          disabled={isTaskDisabled || isEntityTodoListLoading}
           callbackFunc={(newField: { title: string }) => fetchUpdateTaskField({ todoListId, taskId: id, newField })}
           prevTitle={title}
         />
@@ -43,7 +44,7 @@ const Task: FC<T_Task> = ({ title, id, todoListId, status, entityStatus }) => {
           onClick={() => {
             fetchDeleteTask({ todoListId, taskId: id })
           }}
-          disabled={isTaskDisabled}
+          disabled={isTaskDisabled || isEntityTodoListLoading}
         >
           X
         </button>

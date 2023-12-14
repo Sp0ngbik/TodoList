@@ -42,6 +42,7 @@ const fetchDeleteTodoList = createAsyncThunk<{ todoListId: string }, string, Thu
       successHandler(dispatch, "TodoLists was deleted")
       return { todoListId }
     } catch (e) {
+      console.log("s")
       return networkErrorHandler(dispatch, e, rejectWithValue)
     }
   },
@@ -53,7 +54,7 @@ export const fetchAddNewTodoList = createAsyncThunk<{ newTL: T_TodoListPost }, s
     try {
       const newTL = await todolist_API.createTodoList(title)
       if (newTL.data.resultCode) {
-        return localErrorHandler(dispatch, newTL, rejectWithValue)
+        return localErrorHandler(dispatch, newTL, rejectWithValue, false)
       } else {
         successHandler(dispatch, "TodoLists was added")
         dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
@@ -64,7 +65,7 @@ export const fetchAddNewTodoList = createAsyncThunk<{ newTL: T_TodoListPost }, s
     }
   },
 )
-const fetchTodoListTitle = createAsyncThunk<
+const fetchUpdateTodoListTitle = createAsyncThunk<
   { todoListId: string; newTitleTL: string },
   {
     todoListId: string
@@ -125,7 +126,7 @@ export const todolistSlice = createSlice({
           filter: "all",
         })
       })
-      .addCase(fetchTodoListTitle.fulfilled, (state, action) => {
+      .addCase(fetchUpdateTodoListTitle.fulfilled, (state, action) => {
         const todoList = state.findIndex((el) => el.id === action.payload.todoListId)
         state[todoList].title = action.payload.newTitleTL
       })
@@ -138,5 +139,5 @@ export const asyncTodoList = {
   fetchTodoLists,
   fetchDeleteTodoList,
   fetchAddNewTodoList,
-  fetchTodoListTitle,
+  fetchUpdateTodoListTitle,
 }
