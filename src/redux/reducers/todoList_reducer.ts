@@ -1,9 +1,10 @@
 import { T_TodoListCreate, T_TodoListPost, todolist_API } from "../../api/todolist_API"
 import { appActions, T_ResponseStatus } from "./app_reducer"
-import { localErrorHandler, networkErrorHandler, ThunkErrorAPI } from "../../utils/errorsHandler"
+import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
 import { successHandler } from "../../utils/successHandler"
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { asyncTasks } from "./tasks_reducer"
+import { createAppAsyncThunk } from "../../utils/createAppAsyncThunk"
 
 export type T_FilterValues = "all" | "completed" | "inProgress"
 
@@ -13,7 +14,7 @@ export type T_TodoListInitial = T_TodoListCreate & {
 }
 const initialState: T_TodoListInitial[] = []
 
-const fetchTodoLists = createAsyncThunk<{ tlData: T_TodoListCreate[] }, undefined, ThunkErrorAPI>(
+const fetchTodoLists = createAppAsyncThunk<{ tlData: T_TodoListCreate[] }, undefined>(
   "todoList/getTodoLists",
   async (arg, { dispatch, rejectWithValue }) => {
     dispatch(appActions.appSetStatusAC({ status: "loading" }))
@@ -27,7 +28,7 @@ const fetchTodoLists = createAsyncThunk<{ tlData: T_TodoListCreate[] }, undefine
     }
   },
 )
-const fetchDeleteTodoList = createAsyncThunk<{ todoListId: string }, string, ThunkErrorAPI>(
+const fetchDeleteTodoList = createAppAsyncThunk<{ todoListId: string }, string>(
   "todoLists/deleteTodoList",
   async (todoListId, { dispatch, rejectWithValue }) => {
     dispatch(appActions.appSetStatusAC({ status: "loading" }))
@@ -47,7 +48,7 @@ const fetchDeleteTodoList = createAsyncThunk<{ todoListId: string }, string, Thu
     }
   },
 )
-export const fetchAddNewTodoList = createAsyncThunk<{ newTL: T_TodoListPost }, string, ThunkErrorAPI>(
+export const fetchAddNewTodoList = createAppAsyncThunk<{ newTL: T_TodoListPost }, string>(
   "todoList/createTodoList",
   async (title, { dispatch, rejectWithValue }) => {
     dispatch(appActions.appSetStatusAC({ status: "loading" }))
@@ -65,13 +66,12 @@ export const fetchAddNewTodoList = createAsyncThunk<{ newTL: T_TodoListPost }, s
     }
   },
 )
-const fetchUpdateTodoListTitle = createAsyncThunk<
+const fetchUpdateTodoListTitle = createAppAsyncThunk<
   { todoListId: string; newTitleTL: string },
   {
     todoListId: string
     title: string
-  },
-  ThunkErrorAPI
+  }
 >("todoList/editTodoListTitle", async ({ todoListId, title }, { dispatch, rejectWithValue }) => {
   try {
     let updateTL = await todolist_API.updateTodoList(todoListId, title)

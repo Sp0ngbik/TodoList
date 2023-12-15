@@ -33,7 +33,7 @@ const Login = () => {
       }
     },
     onSubmit: (values) => {
-      fetchLogin({ data: values })
+      fetchLogin(values)
     },
   })
 

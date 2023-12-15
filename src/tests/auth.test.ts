@@ -11,7 +11,7 @@ beforeEach(() => {
 })
 
 test("user should be logged in", () => {
-  const endState = authReducer(authState, asyncAuthActions.fetchLogin.fulfilled(undefined, "login", { data: userData }))
+  const endState = authReducer(authState, asyncAuthActions.fetchLogin.fulfilled(null, "login", userData))
   expect(endState.isLoggedIn).toBe(true)
 })
 

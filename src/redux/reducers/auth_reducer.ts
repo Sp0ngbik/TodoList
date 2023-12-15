@@ -1,14 +1,15 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { appActions } from "./app_reducer"
 import { auth_API, T_AuthorizeData } from "../../api/auth_API"
 import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
+import { createAppAsyncThunk } from "../../utils/createAppAsyncThunk"
 
-export const fetchLogin = createAsyncThunk(
+export const fetchLogin = createAppAsyncThunk<null, T_AuthorizeData>(
   "auth/login",
-  async (arg: { data: T_AuthorizeData }, { dispatch, rejectWithValue }) => {
+  async (data, { dispatch, rejectWithValue }) => {
     dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
-      const response = await auth_API.loginMe(arg.data)
+      const response = await auth_API.loginMe(data)
       if (response.data.resultCode === 0) {
         dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
       } else {
@@ -19,7 +20,7 @@ export const fetchLogin = createAsyncThunk(
     }
   },
 )
-const fetchLogout = createAsyncThunk("auth/logout", async (arg, { dispatch, rejectWithValue }) => {
+const fetchLogout = createAppAsyncThunk("auth/logout", async (arg, { dispatch, rejectWithValue }) => {
   dispatch(appActions.appSetStatusAC({ status: "loading" }))
   try {
     const response = await auth_API.logOutMe()

@@ -1,7 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { auth_API } from "../../api/auth_API"
 import { authActions } from "./auth_reducer"
 import { localErrorHandler } from "../../utils/errorsHandler"
+import { createAppAsyncThunk } from "../../utils/createAppAsyncThunk"
 
 export type T_ResponseStatus = "idle" | "loading" | "succeeded" | "failed"
 
@@ -11,7 +12,7 @@ export type T_AppReducer = {
   appInitialize: boolean
 }
 
-const fetchInitApp = createAsyncThunk("app/init", async (arg, { dispatch, rejectWithValue }) => {
+const fetchInitApp = createAppAsyncThunk("app/init", async (arg, { dispatch, rejectWithValue }) => {
   const response = await auth_API.authMe()
   if (response.data.resultCode === 0) {
     dispatch(authActions.setIsLoggedIn({ isLoggedIn: true }))

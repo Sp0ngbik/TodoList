@@ -1,10 +1,11 @@
 import { RootState } from "../store"
 import { T_CreateTask, T_TaskResponseItems, T_UpdateTask, task_API, TasksStatus } from "../../api/task_API"
 import { appActions, T_ResponseStatus } from "./app_reducer"
-import { localErrorHandler, networkErrorHandler, ThunkErrorAPI } from "../../utils/errorsHandler"
+import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
 import { successHandler } from "../../utils/successHandler"
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { asyncTodoList } from "./todoList_reducer"
+import { createAppAsyncThunk } from "../../utils/createAppAsyncThunk"
 
 type T_PutTask = {
   title?: string
@@ -20,7 +21,7 @@ export type T_TasksReducer = {
 }
 const initialState: T_TasksReducer = {}
 
-const fetchTasks = createAsyncThunk<{ tasks: T_TaskResponseItems[]; todoListId: string }, string, ThunkErrorAPI>(
+const fetchTasks = createAppAsyncThunk<{ tasks: T_TaskResponseItems[]; todoListId: string }, string>(
   "tasks/getTasks",
   async (todoListId, { dispatch, rejectWithValue }) => {
     try {
@@ -33,10 +34,9 @@ const fetchTasks = createAsyncThunk<{ tasks: T_TaskResponseItems[]; todoListId: 
   },
 )
 
-export const fetchCreateTask = createAsyncThunk<
+export const fetchCreateTask = createAppAsyncThunk<
   { todoListId: string; newTask: T_CreateTask },
-  { todoListId: string; title: string },
-  ThunkErrorAPI
+  { todoListId: string; title: string }
 >("tasks/createTask", async ({ todoListId, title }, { dispatch, rejectWithValue }) => {
   dispatch(appActions.appSetStatusAC({ status: "loading" }))
   try {
@@ -51,10 +51,9 @@ export const fetchCreateTask = createAsyncThunk<
     return networkErrorHandler(dispatch, e, rejectWithValue)
   }
 })
-const fetchDeleteTask = createAsyncThunk<
+const fetchDeleteTask = createAppAsyncThunk<
   { todoListId: string; taskId: string },
-  { todoListId: string; taskId: string },
-  ThunkErrorAPI
+  { todoListId: string; taskId: string }
 >("tasks/deleteTask", async ({ todoListId, taskId }, { dispatch, rejectWithValue }) => {
   dispatch(appActions.appSetStatusAC({ status: "loading" }))
   try {
@@ -78,10 +77,9 @@ const fetchDeleteTask = createAsyncThunk<
     return networkErrorHandler(dispatch, error, rejectWithValue)
   }
 })
-const fetchUpdateTaskField = createAsyncThunk<
+const fetchUpdateTaskField = createAppAsyncThunk<
   { todoListId: string; taskId: string; taskModel: T_UpdateTask },
-  { todoListId: string; taskId: string; newField: T_PutTask },
-  ThunkErrorAPI
+  { todoListId: string; taskId: string; newField: T_PutTask }
 >("tasks/updateField", async ({ todoListId, taskId, newField }, { dispatch, getState, rejectWithValue }) => {
   const state = getState() as RootState
   const model: T_TaskResponseItems[] = state.tasks[todoListId]

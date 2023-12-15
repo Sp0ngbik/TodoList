@@ -6,9 +6,7 @@ export type T_ErrorType = {
   messages: { field: string; message: string }[]
 }
 
-export type ThunkErrorAPI = {
-  rejectValue: { errors: string; fieldErrors?: T_ErrorType }
-}
+export type ThunkErrorAPI = { errors: string; fieldErrors?: T_ErrorType }
 
 export const localErrorHandler = (
   dispatch: Dispatch,
