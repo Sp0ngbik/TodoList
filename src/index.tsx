@@ -1,17 +1,17 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 import "./index.css"
-import AppTodoList from "./app/AppTodoList"
+import App from "./app/App"
 import reportWebVitals from "./reportWebVitals"
 import { Provider } from "react-redux"
-import { store } from "./redux/store"
+import { store } from "app/store"
 import { BrowserRouter } from "react-router-dom"
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(
   <BrowserRouter>
     <Provider store={store}>
-      <AppTodoList />
+      <App />
     </Provider>
   </BrowserRouter>,
 )
