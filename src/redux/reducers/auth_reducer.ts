@@ -3,6 +3,7 @@ import { appActions } from "./app_reducer"
 import { auth_API, T_AuthorizeData } from "../../api/auth_API"
 import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
 import { createAppAsyncThunk } from "../../utils/createAppAsyncThunk"
+import { ResultCode } from "../../enums/enums"
 
 export const fetchLogin = createAppAsyncThunk<null, T_AuthorizeData>(
   "auth/login",
@@ -10,7 +11,7 @@ export const fetchLogin = createAppAsyncThunk<null, T_AuthorizeData>(
     dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
       const response = await auth_API.loginMe(data)
-      if (response.data.resultCode === 0) {
+      if (response.data.resultCode === ResultCode.success) {
         dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
       } else {
         return localErrorHandler(dispatch, response, rejectWithValue)
@@ -24,7 +25,7 @@ const fetchLogout = createAppAsyncThunk("auth/logout", async (arg, { dispatch, r
   dispatch(appActions.appSetStatusAC({ status: "loading" }))
   try {
     const response = await auth_API.logOutMe()
-    if (response.data.resultCode === 0) {
+    if (response.data.resultCode === ResultCode.success) {
       return
     } else {
       return networkErrorHandler(dispatch, response.data, rejectWithValue)

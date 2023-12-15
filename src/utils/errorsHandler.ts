@@ -1,5 +1,5 @@
 import { appActions } from "../redux/reducers/app_reducer"
-import { AxiosResponse, isAxiosError } from "axios"
+import axios, { AxiosResponse } from "axios"
 import { Dispatch } from "@reduxjs/toolkit"
 
 export type T_ErrorType = {
@@ -22,14 +22,16 @@ export const localErrorHandler = (
 }
 
 export const networkErrorHandler = (dispatch: Dispatch, err: unknown, rejectValue: Function) => {
-  let errorMessage: string
-  if (isAxiosError<T_ErrorType>(err)) {
-    errorMessage = err.response ? err.response.data.messages[0].message : err.message
+  let errorMessage = "Some error occurred"
+
+  if (axios.isAxiosError(err)) {
+    errorMessage = err.response?.data?.message || err?.message || errorMessage
+  } else if (err instanceof Error) {
+    errorMessage = `Native error: ${err.message}`
   } else {
-    errorMessage = (err as Error).message
+    errorMessage = JSON.stringify(err)
   }
-  dispatch(appActions.appSetStatusAC({ status: "failed" }))
   dispatch(appActions.appSetInformMessageAC({ informMessage: errorMessage }))
-  // return rejectValue(null)
+  dispatch(appActions.appSetStatusAC({ status: "failed" }))
   return rejectValue({ errors: [errorMessage], fieldsErrors: undefined })
 }

@@ -1,11 +1,12 @@
 import { RootState } from "../store"
-import { T_CreateTask, T_TaskResponseItems, T_UpdateTask, task_API, TasksStatus } from "../../api/task_API"
+import { T_CreateTask, T_TaskResponseItems, T_UpdateTask, task_API } from "../../api/task_API"
 import { appActions, T_ResponseStatus } from "./app_reducer"
 import { localErrorHandler, networkErrorHandler } from "../../utils/errorsHandler"
 import { successHandler } from "../../utils/successHandler"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { asyncTodoList } from "./todoList_reducer"
 import { createAppAsyncThunk } from "../../utils/createAppAsyncThunk"
+import { ResultCode, TasksStatus } from "../../enums/enums"
 
 type T_PutTask = {
   title?: string
@@ -41,11 +42,11 @@ export const fetchCreateTask = createAppAsyncThunk<
   dispatch(appActions.appSetStatusAC({ status: "loading" }))
   try {
     const newTask = await task_API.createTask(todoListId, title)
-    if (newTask.data.resultCode) {
-      return localErrorHandler(dispatch, newTask, rejectWithValue, false)
-    } else {
+    if (newTask.data.resultCode === ResultCode.success) {
       successHandler(dispatch, "Task added")
       return { todoListId, newTask: newTask.data }
+    } else {
+      return localErrorHandler(dispatch, newTask, rejectWithValue, false)
     }
   } catch (e) {
     return networkErrorHandler(dispatch, e, rejectWithValue)
@@ -65,13 +66,13 @@ const fetchDeleteTask = createAppAsyncThunk<
       }),
     )
     let deleteTask = await task_API.deleteTask(todoListId, taskId)
-    if (deleteTask.data.resultCode) {
-      dispatch(appActions.appSetStatusAC({ status: "failed" }))
-      return localErrorHandler(dispatch, deleteTask, rejectWithValue)
-    } else {
+    if (deleteTask.data.resultCode === ResultCode.success) {
       successHandler(dispatch, "Task was deleted")
       dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
       return { todoListId, taskId }
+    } else {
+      dispatch(appActions.appSetStatusAC({ status: "failed" }))
+      return localErrorHandler(dispatch, deleteTask, rejectWithValue)
     }
   } catch (error) {
     return networkErrorHandler(dispatch, error, rejectWithValue)

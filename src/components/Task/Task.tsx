@@ -1,10 +1,10 @@
 import React, { FC } from "react"
 import { useActions } from "../../hooks/redux_hooks/hooks"
 import style from "./tasks.module.css"
-import { TasksStatus } from "../../api/task_API"
 import EditableSpan from "../EdditableSpan/EditableSpan"
 import { T_ResponseStatus } from "../../redux/reducers/app_reducer"
 import { asyncTasks } from "../../redux/reducers"
+import { TasksStatus } from "../../enums/enums"
 
 type T_Task = {
   id: string

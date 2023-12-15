@@ -3,6 +3,7 @@ import { auth_API } from "../../api/auth_API"
 import { authActions } from "./auth_reducer"
 import { localErrorHandler } from "../../utils/errorsHandler"
 import { createAppAsyncThunk } from "../../utils/createAppAsyncThunk"
+import { ResultCode } from "../../enums/enums"
 
 export type T_ResponseStatus = "idle" | "loading" | "succeeded" | "failed"
 
@@ -14,7 +15,7 @@ export type T_AppReducer = {
 
 const fetchInitApp = createAppAsyncThunk("app/init", async (arg, { dispatch, rejectWithValue }) => {
   const response = await auth_API.authMe()
-  if (response.data.resultCode === 0) {
+  if (response.data.resultCode === ResultCode.success) {
     dispatch(authActions.setIsLoggedIn({ isLoggedIn: true }))
   } else {
     localErrorHandler(dispatch, response, rejectWithValue)

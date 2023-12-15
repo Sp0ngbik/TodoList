@@ -1,7 +1,7 @@
 import React from "react"
 import style from "./todoList.module.css"
 import { useActions, useAppSelector } from "../../hooks/redux_hooks/hooks"
-import { T_TaskResponseItems, TasksStatus } from "../../api/task_API"
+import { T_TaskResponseItems } from "../../api/task_API"
 import Task from "../Task/Task"
 import EditableSpan from "../EdditableSpan/EditableSpan"
 import { T_ResponseStatus } from "../../redux/reducers/app_reducer"
@@ -9,6 +9,7 @@ import { selectTasksForTodos } from "../../redux/selectorsHandler"
 import { asyncTodoList, T_FilterValues, todoListActions } from "../../redux/reducers/todoList_reducer"
 import AddNewItem from "../AddNewTodo/AddNewItem"
 import { fetchCreateTask } from "../../redux/reducers/tasks_reducer"
+import { TasksStatus } from "../../enums/enums"
 
 type T_TodoListsProps = {
   title: string

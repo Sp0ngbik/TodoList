@@ -5,6 +5,7 @@ import { successHandler } from "../../utils/successHandler"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { asyncTasks } from "./tasks_reducer"
 import { createAppAsyncThunk } from "../../utils/createAppAsyncThunk"
+import { ResultCode } from "../../enums/enums"
 
 export type T_FilterValues = "all" | "completed" | "inProgress"
 
@@ -43,7 +44,6 @@ const fetchDeleteTodoList = createAppAsyncThunk<{ todoListId: string }, string>(
       successHandler(dispatch, "TodoLists was deleted")
       return { todoListId }
     } catch (e) {
-      console.log("s")
       return networkErrorHandler(dispatch, e, rejectWithValue)
     }
   },
@@ -54,12 +54,12 @@ export const fetchAddNewTodoList = createAppAsyncThunk<{ newTL: T_TodoListPost }
     dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
       const newTL = await todolist_API.createTodoList(title)
-      if (newTL.data.resultCode) {
-        return localErrorHandler(dispatch, newTL, rejectWithValue, false)
-      } else {
+      if (newTL.data.resultCode === ResultCode.success) {
         successHandler(dispatch, "TodoLists was added")
         dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
         return { newTL: newTL.data.data }
+      } else {
+        return localErrorHandler(dispatch, newTL, rejectWithValue, false)
       }
     } catch (e) {
       return networkErrorHandler(dispatch, e, rejectWithValue)
@@ -75,11 +75,11 @@ const fetchUpdateTodoListTitle = createAppAsyncThunk<
 >("todoList/editTodoListTitle", async ({ todoListId, title }, { dispatch, rejectWithValue }) => {
   try {
     let updateTL = await todolist_API.updateTodoList(todoListId, title)
-    if (updateTL.data.resultCode) {
-      return localErrorHandler(dispatch, updateTL, rejectWithValue)
-    } else {
+    if (updateTL.data.resultCode === ResultCode.success) {
       successHandler(dispatch, "TodoLists was edited")
       return { todoListId, newTitleTL: title }
+    } else {
+      return localErrorHandler(dispatch, updateTL, rejectWithValue)
     }
   } catch (e) {
     return networkErrorHandler(dispatch, e, rejectWithValue)

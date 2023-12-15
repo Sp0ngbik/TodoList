@@ -1,5 +1,6 @@
 import { asyncTasks, T_TasksReducer, tasks_reducer, tasksActions } from "../redux/reducers/tasks_reducer"
-import { T_CreateTask, TasksStatus } from "../api/task_API"
+import { T_CreateTask } from "../api/task_API"
+import { TasksStatus } from "../enums/enums"
 
 let taskId1: string
 let taskId2: string

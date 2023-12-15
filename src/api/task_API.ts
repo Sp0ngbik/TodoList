@@ -1,5 +1,6 @@
 import { instanceAxios } from "./todolist_API"
 import { T_ResponseStatus } from "../redux/reducers/app_reducer"
+import { TaskPriorities, TasksStatus } from "../enums/enums"
 
 export type T_TaskResponseItems = {
   description: string
@@ -20,7 +21,7 @@ export type T_UpdateTask = {
   description: string
   completed: boolean
   status: TasksStatus
-  priority: number
+  priority: TaskPriorities
   startDate: string
   deadline: string
 }
@@ -43,13 +44,6 @@ export type T_TasksResponse<D = {}> = {
   resultCode: number
   messages: string[]
   data: D
-}
-
-export enum TasksStatus {
-  New,
-  InProgress,
-  Completed,
-  Draft,
 }
 
 export const task_API = {
