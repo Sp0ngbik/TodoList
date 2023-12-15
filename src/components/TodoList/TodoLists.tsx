@@ -18,7 +18,7 @@ type T_TodoListsProps = {
 }
 
 export const TodoList: React.FC<T_TodoListsProps> = React.memo(({ title, todoListId, filter, entityStatus }) => {
-  const { fetchTodoListTitle, fetchDeleteTodoList } = useActions(asyncTodoList)
+  const { fetchDeleteTodoList, fetchUpdateTodoListTitle } = useActions(asyncTodoList)
   const { changeTodoListFilterAC } = useActions(todoListActions)
   const tasksData: T_TaskResponseItems[] = useAppSelector(selectTasksForTodos(todoListId))
 
@@ -56,7 +56,7 @@ export const TodoList: React.FC<T_TodoListsProps> = React.memo(({ title, todoLis
           disabled={isEntityTodoListLoading}
           prevTitle={title}
           callbackFunc={(param: { title: string }) =>
-            fetchTodoListTitle({
+            fetchUpdateTodoListTitle({
               todoListId: todoListId,
               title: param.title,
             })
