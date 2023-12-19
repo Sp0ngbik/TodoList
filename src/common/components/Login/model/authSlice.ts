@@ -6,22 +6,6 @@ import { createAppAsyncThunk } from "common/hooks/redux_hooks/createAppAsyncThun
 import { ResultCode } from "common/enums/enums"
 import { localErrorHandler } from "common/utils/localErrorHandler"
 
-export const fetchLogin = createAppAsyncThunk<null, T_AuthorizeData>(
-  "auth/login",
-  async (data, { dispatch, rejectWithValue }) => {
-    dispatch(appActions.appSetStatusAC({ status: "loading" }))
-    try {
-      const response = await auth_API.loginMe(data)
-      if (response.data.resultCode === ResultCode.success) {
-        dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
-      } else {
-        return localErrorHandler(dispatch, response, rejectWithValue)
-      }
-    } catch (e) {
-      return networkErrorHandler(dispatch, e, rejectWithValue)
-    }
-  },
-)
 const fetchLogout = createAppAsyncThunk("auth/logout", async (arg, { dispatch, rejectWithValue }) => {
   dispatch(appActions.appSetStatusAC({ status: "loading" }))
   try {
@@ -56,7 +40,22 @@ export const authSlice = createSlice({
       })
   },
 })
-
+export const fetchLogin = createAppAsyncThunk<null, T_AuthorizeData>(
+  `${authSlice.name}/login`,
+  async (data, { dispatch, rejectWithValue }) => {
+    dispatch(appActions.appSetStatusAC({ status: "loading" }))
+    try {
+      const response = await auth_API.loginMe(data)
+      if (response.data.resultCode === ResultCode.success) {
+        dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
+      } else {
+        return localErrorHandler(dispatch, response, rejectWithValue)
+      }
+    } catch (e) {
+      return networkErrorHandler(dispatch, e, rejectWithValue)
+    }
+  },
+)
 export const authReducer = authSlice.reducer
 export const authActions = authSlice.actions
 export const asyncAuthActions = { fetchLogin, fetchLogout }

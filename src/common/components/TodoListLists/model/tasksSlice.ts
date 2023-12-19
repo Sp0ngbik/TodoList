@@ -23,97 +23,6 @@ export type T_TasksReducer = {
 }
 const initialState: T_TasksReducer = {}
 
-const fetchTasks = createAppAsyncThunk<{ tasks: T_TaskResponseItems[]; todoListId: string }, string>(
-  "tasks/getTasks",
-  async (todoListId, { dispatch, rejectWithValue }) => {
-    try {
-      const tasksData = await task_API.getTask(todoListId)
-      const tasks = tasksData.data.items
-      return { tasks, todoListId }
-    } catch (e) {
-      return networkErrorHandler(dispatch, e, rejectWithValue)
-    }
-  },
-)
-
-export const fetchCreateTask = createAppAsyncThunk<
-  { todoListId: string; newTask: T_CreateTask },
-  { todoListId: string; title: string }
->("tasks/createTask", async ({ todoListId, title }, { dispatch, rejectWithValue }) => {
-  dispatch(appActions.appSetStatusAC({ status: "loading" }))
-  try {
-    const newTask = await task_API.createTask(todoListId, title)
-    if (newTask.data.resultCode === ResultCode.success) {
-      successHandler(dispatch, "Task added")
-      return { todoListId, newTask: newTask.data }
-    } else {
-      return localErrorHandler(dispatch, newTask, rejectWithValue, false)
-    }
-  } catch (e) {
-    return networkErrorHandler(dispatch, e, rejectWithValue)
-  }
-})
-const fetchDeleteTask = createAppAsyncThunk<
-  { todoListId: string; taskId: string },
-  { todoListId: string; taskId: string }
->("tasks/deleteTask", async ({ todoListId, taskId }, { dispatch, rejectWithValue }) => {
-  dispatch(appActions.appSetStatusAC({ status: "loading" }))
-  try {
-    dispatch(
-      tasksActions.changeTaskEntityStatusAC({
-        todoListId: todoListId,
-        taskId: taskId,
-        status: "loading",
-      }),
-    )
-    let deleteTask = await task_API.deleteTask(todoListId, taskId)
-    if (deleteTask.data.resultCode === ResultCode.success) {
-      successHandler(dispatch, "Task was deleted")
-      dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
-      return { todoListId, taskId }
-    } else {
-      dispatch(appActions.appSetStatusAC({ status: "failed" }))
-      return localErrorHandler(dispatch, deleteTask, rejectWithValue)
-    }
-  } catch (error) {
-    return networkErrorHandler(dispatch, error, rejectWithValue)
-  }
-})
-const fetchUpdateTaskField = createAppAsyncThunk<
-  { todoListId: string; taskId: string; taskModel: T_UpdateTask },
-  { todoListId: string; taskId: string; newField: T_PutTask }
->("tasks/updateField", async ({ todoListId, taskId, newField }, { dispatch, getState, rejectWithValue }) => {
-  const state = getState() as RootState
-  const model: T_TaskResponseItems[] = state.tasks[todoListId]
-  let task = model.find((el) => el.id === taskId)
-  if (task) {
-    const taskModel: T_UpdateTask = {
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      deadline: task.deadLine,
-      priority: task.priority,
-      startDate: task.startDate,
-      completed: false,
-      ...newField,
-    }
-    try {
-      let newTask = await task_API.updateTask(todoListId, taskId, taskModel)
-      if (newTask.data.resultCode) {
-        return localErrorHandler(dispatch, newTask, rejectWithValue)
-      } else {
-        successHandler(dispatch, "Task was updated")
-        return {
-          todoListId,
-          taskId,
-          taskModel: newField,
-        }
-      }
-    } catch (e) {
-      return networkErrorHandler(dispatch, e, rejectWithValue)
-    }
-  }
-})
 export const taskSlice = createSlice({
   name: "tasks",
   initialState,
@@ -165,7 +74,100 @@ export const taskSlice = createSlice({
       })
   },
 })
+const fetchTasks = createAppAsyncThunk<{ tasks: T_TaskResponseItems[]; todoListId: string }, string>(
+  `${taskSlice.name}/getTasks`,
+  async (todoListId, { dispatch, rejectWithValue }) => {
+    try {
+      const tasksData = await task_API.getTask(todoListId)
+      const tasks = tasksData.data.items
+      return { tasks, todoListId }
+    } catch (e) {
+      return networkErrorHandler(dispatch, e, rejectWithValue)
+    }
+  },
+)
 
+export const fetchCreateTask = createAppAsyncThunk<
+  { todoListId: string; newTask: T_CreateTask },
+  { todoListId: string; title: string }
+>(`${taskSlice.name}/createTask`, async ({ todoListId, title }, { dispatch, rejectWithValue }) => {
+  dispatch(appActions.appSetStatusAC({ status: "loading" }))
+  try {
+    const newTask = await task_API.createTask(todoListId, title)
+    if (newTask.data.resultCode === ResultCode.success) {
+      successHandler(dispatch, "Task added")
+      return { todoListId, newTask: newTask.data }
+    } else {
+      return localErrorHandler(dispatch, newTask, rejectWithValue, false)
+    }
+  } catch (e) {
+    return networkErrorHandler(dispatch, e, rejectWithValue)
+  }
+})
+const fetchDeleteTask = createAppAsyncThunk<
+  { todoListId: string; taskId: string },
+  { todoListId: string; taskId: string }
+>(`${taskSlice.name}/deleteTask`, async ({ todoListId, taskId }, { dispatch, rejectWithValue }) => {
+  dispatch(appActions.appSetStatusAC({ status: "loading" }))
+  try {
+    dispatch(
+      tasksActions.changeTaskEntityStatusAC({
+        todoListId: todoListId,
+        taskId: taskId,
+        status: "loading",
+      }),
+    )
+    let deleteTask = await task_API.deleteTask(todoListId, taskId)
+    if (deleteTask.data.resultCode === ResultCode.success) {
+      successHandler(dispatch, "Task was deleted")
+      dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
+      return { todoListId, taskId }
+    } else {
+      dispatch(appActions.appSetStatusAC({ status: "failed" }))
+      return localErrorHandler(dispatch, deleteTask, rejectWithValue)
+    }
+  } catch (error) {
+    return networkErrorHandler(dispatch, error, rejectWithValue)
+  }
+})
+const fetchUpdateTaskField = createAppAsyncThunk<
+  { todoListId: string; taskId: string; taskModel: T_UpdateTask },
+  { todoListId: string; taskId: string; newField: T_PutTask }
+>(
+  `${taskSlice.name}/updateField`,
+  async ({ todoListId, taskId, newField }, { dispatch, getState, rejectWithValue }) => {
+    const state = getState() as RootState
+    const model: T_TaskResponseItems[] = state.tasks[todoListId]
+    let task = model.find((el) => el.id === taskId)
+    if (task) {
+      const taskModel: T_UpdateTask = {
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        deadline: task.deadLine,
+        priority: task.priority,
+        startDate: task.startDate,
+        completed: false,
+        ...newField,
+      }
+      try {
+        let newTask = await task_API.updateTask(todoListId, taskId, taskModel)
+        if (newTask.data.resultCode) {
+          return localErrorHandler(dispatch, newTask, rejectWithValue)
+        } else {
+          successHandler(dispatch, "Task was updated")
+          return {
+            todoListId,
+            taskId,
+            taskModel: newField,
+          }
+        }
+      } catch (e) {
+        return networkErrorHandler(dispatch, e, rejectWithValue)
+      }
+    }
+  },
+)
 export const tasksActions = taskSlice.actions
 export const tasksReducer = taskSlice.reducer
 export const asyncTasks = { fetchTasks, fetchCreateTask, fetchDeleteTask, fetchUpdateTaskField }
