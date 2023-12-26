@@ -3,10 +3,10 @@ import { useActions, useAppSelector } from "common/hooks/redux_hooks/useAction"
 import LoadingScale from "../common/helpers/loadingScale/LoadingScale"
 import { Notification } from "common/helpers/notification/Notification"
 import { Route, Routes } from "react-router-dom"
-import Login from "../common/components/Login/ui/Login"
-import TodoListLists from "../common/components/TodoListLists/ui/TodoListLists/TodoListLists"
-import { asyncAuthActions } from "common/components/Login/model/authSlice"
 import { appInitialize } from "app/model/appSelectors"
+import { asyncAuthActions } from "features/Login/model/authSlice"
+import TodoListLists from "features/TodoListLists/ui/TodoListLists/TodoListLists"
+import Login from "features/Login/ui/Login"
 
 const App = React.memo(() => {
   const { fetchInitApp } = useActions(asyncAuthActions)

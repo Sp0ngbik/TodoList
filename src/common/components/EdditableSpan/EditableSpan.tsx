@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react"
-import style from "./editableSpan.module.css"
+import style from "common/components/EdditableSpan/editableSpan.module.css"
 import { useFormik } from "formik"
 
 type T_EditableSpan = {
@@ -34,10 +34,16 @@ const EditableSpan: FC<T_EditableSpan> = ({ callbackFunc, prevTitle, disabled })
     <div className={style.editSpanWrapper}>
       {editMode ? (
         <div>
-          {editableFormik.touched.title && editableFormik.errors.title && <div>{editableFormik.errors.title}</div>}
+          {editableFormik.touched.title && editableFormik.errors.title && (
+            <div>{editableFormik.errors.title}</div>
+          )}
           <div>
             <form onSubmit={editableFormik.handleSubmit}>
-              <textarea {...editableFormik.getFieldProps("title")} autoFocus onBlur={editableFormik.submitForm} />
+              <textarea
+                {...editableFormik.getFieldProps("title")}
+                autoFocus
+                onBlur={editableFormik.submitForm}
+              />
             </form>
           </div>
         </div>

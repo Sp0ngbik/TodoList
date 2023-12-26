@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react"
-import AddNewItem from "../../../../../features/AddNewTodo/AddNewItem"
+import AddNewItem from "common/components/AddNewTodo/AddNewItem"
 import { Navigate } from "react-router-dom"
 import { TodoList } from "../TodoList/TodoLists"
 import style from "./todoLists.module.css"
@@ -7,7 +7,7 @@ import { asyncTodoList, fetchAddNewTodoList } from "../../model/todoListSlice"
 import { useActions, useAppSelector } from "common/hooks/redux_hooks/useAction"
 import { todoListSelector } from "../../model/todoListSelectors"
 import { asyncAuthActions } from "../../../Login/model/authSlice"
-import { isLoggedInSelector } from "common/components/Login/model/authSelectors"
+import { isLoggedInSelector } from "features/Login/model/authSelectors"
 
 const TodoListLists = () => {
   const { fetchTodoLists } = useActions(asyncTodoList)
@@ -31,7 +31,12 @@ const TodoListLists = () => {
       <div className={style.allTodosWrapper}>
         {todoListsData.map((tl) => (
           <div key={tl.id}>
-            <TodoList title={tl.title} todoListId={tl.id} filter={tl.filter} entityStatus={tl.entityStatus} />
+            <TodoList
+              title={tl.title}
+              todoListId={tl.id}
+              filter={tl.filter}
+              entityStatus={tl.entityStatus}
+            />
           </div>
         ))}
       </div>

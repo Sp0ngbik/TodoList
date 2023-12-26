@@ -1,7 +1,7 @@
 import { RootState } from "app/store"
 import { createSelector } from "@reduxjs/toolkit"
-import { T_FilterValues } from "common/components/TodoListLists/model/todoListSlice"
 import { TasksStatus } from "common/enums/enums"
+import { T_FilterValues } from "./todoListSlice"
 
 export const tasks = (state: RootState) => state.tasks
 export const selectTasksForTodos = (id: string, filter: T_FilterValues) =>

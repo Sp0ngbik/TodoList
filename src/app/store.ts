@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit"
-import { tasksReducer } from "common/components/TodoListLists/model/tasksSlice"
-import { todoListReducer } from "common/components/TodoListLists/model/todoListSlice"
 import { appReducer } from "./model/appSlice"
-import { authReducer } from "common/components/Login/model/authSlice"
+import { tasksReducer } from "features/TodoListLists/model/tasksSlice"
+import { todoListReducer } from "features/TodoListLists/model/todoListSlice"
+import { authReducer } from "features/Login/model/authSlice"
 
 export const store = configureStore({
   reducer: {

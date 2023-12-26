@@ -1,9 +1,9 @@
 import React, { FC } from "react"
-import style from "./addNewTodo.module.css"
+import style from "common/components/AddNewTodo/addNewTodo.module.css"
 import { FormikHelpers, useFormik } from "formik"
 import { useAppDispatch } from "common/hooks/redux_hooks/useAction"
-import { fetchAddNewTodoList } from "common/components/TodoListLists/model/todoListSlice"
-import { fetchCreateTask } from "common/components/TodoListLists/model/tasksSlice"
+import { fetchAddNewTodoList } from "features/TodoListLists/model/todoListSlice"
+import { fetchCreateTask } from "features/TodoListLists/model/tasksSlice"
 
 type T_AddNewItem = {
   callback: Function
