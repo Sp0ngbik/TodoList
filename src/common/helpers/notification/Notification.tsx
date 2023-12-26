@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { useAppDispatch, useAppSelector } from "../../hooks/redux_hooks/hooks"
+import { useAppDispatch, useAppSelector } from "common/hooks/redux_hooks/useAction"
 import { appActions } from "app/model/appSlice"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.min.css"

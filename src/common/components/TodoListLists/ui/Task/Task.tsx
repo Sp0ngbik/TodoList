@@ -1,5 +1,5 @@
 import React, { FC } from "react"
-import { useActions } from "common/hooks/redux_hooks/hooks"
+import { useActions } from "common/hooks/redux_hooks/useAction"
 import style from "./tasks.module.css"
 import EditableSpan from "../../../../../features/EdditableSpan/EditableSpan"
 import { T_ResponseStatus } from "app/model/appSlice"

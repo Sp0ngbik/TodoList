@@ -1,9 +1,9 @@
 import React from "react"
 import { useFormik } from "formik"
 import style from "./form.module.css"
-import { useActions, useAppSelector } from "common/hooks/redux_hooks/hooks"
+import { useActions, useAppSelector } from "common/hooks/redux_hooks/useAction"
 import { Navigate } from "react-router-dom"
-import { isLoggedInSelector } from "../model/loggedInSelector"
+import { isLoggedInSelector } from "common/components/Login/model/authSelectors"
 import { asyncAuthActions } from "../model/authSlice"
 
 type T_FormikTypes = {

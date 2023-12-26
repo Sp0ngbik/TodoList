@@ -4,9 +4,10 @@ import { Navigate } from "react-router-dom"
 import { TodoList } from "../TodoList/TodoLists"
 import style from "./todoLists.module.css"
 import { asyncTodoList, fetchAddNewTodoList } from "../../model/todoListSlice"
-import { useActions, useAppSelector } from "common/hooks/redux_hooks/hooks"
+import { useActions, useAppSelector } from "common/hooks/redux_hooks/useAction"
 import { todoListSelector } from "../../model/todoListSelectors"
 import { asyncAuthActions } from "../../../Login/model/authSlice"
+import { isLoggedInSelector } from "common/components/Login/model/authSelectors"
 
 const TodoListLists = () => {
   const { fetchTodoLists } = useActions(asyncTodoList)
@@ -15,7 +16,7 @@ const TodoListLists = () => {
     fetchTodoLists()
   }, [fetchTodoLists])
   const todoListsData = useAppSelector(todoListSelector)
-  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
+  const isLoggedIn = useAppSelector(isLoggedInSelector)
   const logOutHandler = useCallback(() => {
     fetchLogout()
   }, [fetchLogout])

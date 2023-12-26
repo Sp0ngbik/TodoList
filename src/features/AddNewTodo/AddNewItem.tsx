@@ -1,7 +1,7 @@
 import React, { FC } from "react"
 import style from "./addNewTodo.module.css"
 import { FormikHelpers, useFormik } from "formik"
-import { useAppDispatch } from "common/hooks/redux_hooks/hooks"
+import { useAppDispatch } from "common/hooks/redux_hooks/useAction"
 import { fetchAddNewTodoList } from "common/components/TodoListLists/model/todoListSlice"
 import { fetchCreateTask } from "common/components/TodoListLists/model/tasksSlice"
 
