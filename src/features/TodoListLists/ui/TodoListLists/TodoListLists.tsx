@@ -3,11 +3,10 @@ import AddNewItem from "common/components/AddNewTodo/AddNewItem"
 import { Navigate } from "react-router-dom"
 import { TodoList } from "../TodoList/TodoLists"
 import style from "./todoLists.module.css"
-import { asyncTodoList, fetchAddNewTodoList } from "../../model/todoListSlice"
-import { useActions, useAppSelector } from "common/hooks/redux_hooks/useAction"
-import { todoListSelector } from "../../model/todoListSelectors"
-import { asyncAuthActions } from "../../../Login/model/authSlice"
+import { asyncTodoList, fetchAddNewTodoList, todoListSelector } from "features/TodoListLists/model"
 import { isLoggedInSelector } from "features/Login/model/authSelectors"
+import { asyncAuthActions } from "features/Login/model/authSlice"
+import { useActions, useAppSelector } from "common/hooks/redux_hooks"
 
 const TodoListLists = () => {
   const { fetchTodoLists } = useActions(asyncTodoList)

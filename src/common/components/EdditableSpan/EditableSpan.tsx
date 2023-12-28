@@ -8,7 +8,7 @@ type T_EditableSpan = {
   disabled: boolean
 }
 
-const EditableSpan: FC<T_EditableSpan> = ({ callbackFunc, prevTitle, disabled }) => {
+export const EditableSpan: FC<T_EditableSpan> = ({ callbackFunc, prevTitle, disabled }) => {
   const [editMode, setEditMode] = useState(false)
   const onActivateEditMode = () => {
     disabled ? setEditMode(false) : setEditMode(true)
@@ -53,5 +53,3 @@ const EditableSpan: FC<T_EditableSpan> = ({ callbackFunc, prevTitle, disabled })
     </div>
   )
 }
-
-export default EditableSpan

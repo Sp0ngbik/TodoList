@@ -1,14 +1,18 @@
 import React from "react"
 import style from "./todoList.module.css"
-import { useActions, useAppSelector } from "common/hooks/redux_hooks/useAction"
 import { T_TaskResponseItems } from "../../api/task_API"
-import Task from "../Task/Task"
-import EditableSpan from "common/components/EdditableSpan/EditableSpan"
 import { T_ResponseStatus } from "app/model/appSlice"
-import { asyncTodoList, T_FilterValues, todoListActions } from "../../model/todoListSlice"
 import AddNewItem from "common/components/AddNewTodo/AddNewItem"
-import { fetchCreateTask } from "../../model/tasksSlice"
-import { selectTasksForTodos } from "../../model/tasksSelectors"
+import {
+  asyncTodoList,
+  fetchCreateTask,
+  selectTasksForTodos,
+  T_FilterValues,
+  todoListActions,
+} from "features/TodoListLists/model"
+import { Task } from "../Task"
+import { EditableSpan } from "common/components/EdditableSpan"
+import { useActions, useAppSelector } from "common/hooks/redux_hooks"
 
 type T_TodoListsProps = {
   title: string

@@ -1,10 +1,10 @@
 import React, { FC } from "react"
-import { useActions } from "common/hooks/redux_hooks/useAction"
 import style from "./tasks.module.css"
-import EditableSpan from "common/components/EdditableSpan/EditableSpan"
 import { T_ResponseStatus } from "app/model/appSlice"
 import { TasksStatus } from "common/enums/enums"
 import { asyncTasks } from "../../model/tasksSlice"
+import { EditableSpan } from "common/components/EdditableSpan"
+import { useActions } from "common/hooks/redux_hooks"
 
 type T_Task = {
   id: string
@@ -15,7 +15,7 @@ type T_Task = {
   isEntityTodoListLoading: boolean
 }
 
-const Task: FC<T_Task> = ({
+export const Task: FC<T_Task> = ({
   title,
   id,
   todoListId,
@@ -61,5 +61,3 @@ const Task: FC<T_Task> = ({
     </div>
   )
 }
-
-export default Task
