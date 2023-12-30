@@ -20,7 +20,10 @@ export const todolistSlice = createSlice({
   name: "todoList",
   initialState,
   reducers: {
-    changeTodoListFilterAC: (state, action: PayloadAction<{ todoListId: string; filter: T_FilterValues }>) => {
+    changeTodoListFilterAC: (
+      state,
+      action: PayloadAction<{ todoListId: string; filter: T_FilterValues }>,
+    ) => {
       const todoList = state.findIndex((el) => el.id === action.payload.todoListId)
       state[todoList].filter = action.payload.filter
     },
@@ -66,7 +69,6 @@ export const todolistSlice = createSlice({
 const fetchTodoLists = createAppAsyncThunk<{ tlData: T_TodoListCreate[] }, undefined>(
   `${todolistSlice.name}/getTodoLists`,
   async (arg, { dispatch, rejectWithValue }) => {
-    dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
       const todoListsData = await todolist_API.getTodoLists()
       successHandler(dispatch, "TodoLists and tasks loaded")
@@ -80,7 +82,6 @@ const fetchTodoLists = createAppAsyncThunk<{ tlData: T_TodoListCreate[] }, undef
 const fetchDeleteTodoList = createAppAsyncThunk<{ todoListId: string }, string>(
   `${todolistSlice.name}/deleteTodoList`,
   async (todoListId, { dispatch, rejectWithValue }) => {
-    dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
       dispatch(
         todoListActions.changeTodoListEntityStatusAC({
@@ -99,12 +100,10 @@ const fetchDeleteTodoList = createAppAsyncThunk<{ todoListId: string }, string>(
 export const fetchAddNewTodoList = createAppAsyncThunk<{ newTL: T_TodoListPost }, string>(
   `${todolistSlice.name}/createTodoList`,
   async (title, { dispatch, rejectWithValue }) => {
-    dispatch(appActions.appSetStatusAC({ status: "loading" }))
     try {
       const newTL = await todolist_API.createTodoList(title)
       if (newTL.data.resultCode === ResultCode.success) {
         successHandler(dispatch, "TodoLists was added")
-        dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
         return { newTL: newTL.data.data }
       } else {
         return localErrorHandler(dispatch, newTL, rejectWithValue, false)
@@ -120,19 +119,22 @@ const fetchUpdateTodoListTitle = createAppAsyncThunk<
     todoListId: string
     title: string
   }
->(`${todolistSlice.name}/editTodoListTitle`, async ({ todoListId, title }, { dispatch, rejectWithValue }) => {
-  try {
-    let updateTL = await todolist_API.updateTodoList(todoListId, title)
-    if (updateTL.data.resultCode === ResultCode.success) {
-      successHandler(dispatch, "TodoLists was edited")
-      return { todoListId, newTitleTL: title }
-    } else {
-      return localErrorHandler(dispatch, updateTL, rejectWithValue)
+>(
+  `${todolistSlice.name}/editTodoListTitle`,
+  async ({ todoListId, title }, { dispatch, rejectWithValue }) => {
+    try {
+      let updateTL = await todolist_API.updateTodoList(todoListId, title)
+      if (updateTL.data.resultCode === ResultCode.success) {
+        successHandler(dispatch, "TodoLists was edited")
+        return { todoListId, newTitleTL: title }
+      } else {
+        return localErrorHandler(dispatch, updateTL, rejectWithValue)
+      }
+    } catch (e) {
+      return networkErrorHandler(dispatch, e, rejectWithValue)
     }
-  } catch (e) {
-    return networkErrorHandler(dispatch, e, rejectWithValue)
-  }
-})
+  },
+)
 
 export const todoListReducer = todolistSlice.reducer
 export const todoListActions = todolistSlice.actions

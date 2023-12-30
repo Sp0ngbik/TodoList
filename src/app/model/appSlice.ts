@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, isFulfilled, isPending, isRejected, PayloadAction } from "@reduxjs/toolkit"
 
 export type T_ResponseStatus = "idle" | "loading" | "succeeded" | "failed"
 
@@ -25,6 +25,18 @@ const appSlice = createSlice({
     setAppInitialized: (state, action: PayloadAction<{ appInitialized: boolean }>) => {
       state.appInitialize = action.payload.appInitialized
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addMatcher(isPending, (state) => {
+        state.status = "loading"
+      })
+      .addMatcher(isFulfilled, (state) => {
+        state.status = "succeeded"
+      })
+      .addMatcher(isRejected, (state) => {
+        state.status = "failed"
+      })
   },
 })
 

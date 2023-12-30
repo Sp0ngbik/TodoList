@@ -35,7 +35,9 @@ export const taskSlice = createSlice({
         status: T_ResponseStatus
       }>,
     ) => {
-      const task = state[action.payload.todoListId].findIndex((el) => el.id === action.payload.taskId)
+      const task = state[action.payload.todoListId].findIndex(
+        (el) => el.id === action.payload.taskId,
+      )
       state[action.payload.todoListId][task].entityTaskStatus = action.payload.status
     },
   },
@@ -56,17 +58,27 @@ export const taskSlice = createSlice({
       .addCase(fetchCreateTask.fulfilled, (state, action) => {
         if (state[action.payload.todoListId].length >= 10) {
           state[action.payload.todoListId].pop()
-          state[action.payload.todoListId] = [action.payload.newTask.data.item, ...state[action.payload.todoListId]]
+          state[action.payload.todoListId] = [
+            action.payload.newTask.data.item,
+            ...state[action.payload.todoListId],
+          ]
         } else {
-          state[action.payload.todoListId] = [action.payload.newTask.data.item, ...state[action.payload.todoListId]]
+          state[action.payload.todoListId] = [
+            action.payload.newTask.data.item,
+            ...state[action.payload.todoListId],
+          ]
         }
       })
       .addCase(fetchDeleteTask.fulfilled, (state, action) => {
-        const index = state[action.payload.todoListId].findIndex((el) => el.id === action.payload.taskId)
+        const index = state[action.payload.todoListId].findIndex(
+          (el) => el.id === action.payload.taskId,
+        )
         state[action.payload.todoListId].splice(index, 1)
       })
       .addCase(fetchUpdateTaskField.fulfilled, (state, action) => {
-        const task = state[action.payload.todoListId].findIndex((el) => el.id === action.payload.taskId)
+        const task = state[action.payload.todoListId].findIndex(
+          (el) => el.id === action.payload.taskId,
+        )
         state[action.payload.todoListId][task] = {
           ...state[action.payload.todoListId][task],
           ...action.payload.taskModel,
@@ -74,18 +86,18 @@ export const taskSlice = createSlice({
       })
   },
 })
-const fetchTasks = createAppAsyncThunk<{ tasks: T_TaskResponseItems[]; todoListId: string }, string>(
-  `${taskSlice.name}/getTasks`,
-  async (todoListId, { dispatch, rejectWithValue }) => {
-    try {
-      const tasksData = await task_API.getTask(todoListId)
-      const tasks = tasksData.data.items
-      return { tasks, todoListId }
-    } catch (e) {
-      return networkErrorHandler(dispatch, e, rejectWithValue)
-    }
-  },
-)
+const fetchTasks = createAppAsyncThunk<
+  { tasks: T_TaskResponseItems[]; todoListId: string },
+  string
+>(`${taskSlice.name}/getTasks`, async (todoListId, { dispatch, rejectWithValue }) => {
+  try {
+    const tasksData = await task_API.getTask(todoListId)
+    const tasks = tasksData.data.items
+    return { tasks, todoListId }
+  } catch (e) {
+    return networkErrorHandler(dispatch, e, rejectWithValue)
+  }
+})
 
 export const fetchCreateTask = createAppAsyncThunk<
   { todoListId: string; newTask: T_CreateTask },
@@ -108,7 +120,6 @@ const fetchDeleteTask = createAppAsyncThunk<
   { todoListId: string; taskId: string },
   { todoListId: string; taskId: string }
 >(`${taskSlice.name}/deleteTask`, async ({ todoListId, taskId }, { dispatch, rejectWithValue }) => {
-  dispatch(appActions.appSetStatusAC({ status: "loading" }))
   try {
     dispatch(
       tasksActions.changeTaskEntityStatusAC({
@@ -120,10 +131,8 @@ const fetchDeleteTask = createAppAsyncThunk<
     let deleteTask = await task_API.deleteTask(todoListId, taskId)
     if (deleteTask.data.resultCode === ResultCode.success) {
       successHandler(dispatch, "Task was deleted")
-      dispatch(appActions.appSetStatusAC({ status: "succeeded" }))
       return { todoListId, taskId }
     } else {
-      dispatch(appActions.appSetStatusAC({ status: "failed" }))
       return localErrorHandler(dispatch, deleteTask, rejectWithValue)
     }
   } catch (error) {

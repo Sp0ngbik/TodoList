@@ -8,7 +8,6 @@ export const localErrorHandler = (
   rejectValue: Function,
   globalNotification: boolean = true,
 ) => {
-  dispatch(appActions.appSetStatusAC({ status: "failed" }))
   if (globalNotification) {
     dispatch(appActions.appSetInformMessageAC({ informMessage: err.data.messages[0] }))
   }

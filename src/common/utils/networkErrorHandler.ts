@@ -19,6 +19,5 @@ export const networkErrorHandler = (dispatch: Dispatch, err: unknown, rejectValu
     errorMessage = JSON.stringify(err)
   }
   dispatch(appActions.appSetInformMessageAC({ informMessage: errorMessage }))
-  dispatch(appActions.appSetStatusAC({ status: "failed" }))
   return rejectValue({ errors: [errorMessage], fieldsErrors: undefined })
 }
