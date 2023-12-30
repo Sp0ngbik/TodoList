@@ -1,12 +1,10 @@
 import { T_TodoListCreate, T_TodoListPost, todolist_API } from "../api/todolist_API"
-import { appActions, T_ResponseStatus } from "app/model/appSlice"
-import { networkErrorHandler } from "common/utils/networkErrorHandler"
+import { T_ResponseStatus } from "app/model/appSlice"
 import { successHandler } from "common/utils/successHandler"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { asyncTasks } from "./tasksSlice"
 import { createAppAsyncThunk } from "common/hooks/redux_hooks/createAppAsyncThunk"
 import { ResultCode } from "common/enums/enums"
-import { localErrorHandler } from "common/utils/localErrorHandler"
 
 export type T_FilterValues = "all" | "completed" | "inProgress"
 
@@ -69,47 +67,39 @@ export const todolistSlice = createSlice({
 const fetchTodoLists = createAppAsyncThunk<{ tlData: T_TodoListCreate[] }, undefined>(
   `${todolistSlice.name}/getTodoLists`,
   async (arg, { dispatch, rejectWithValue }) => {
-    try {
-      const todoListsData = await todolist_API.getTodoLists()
-      successHandler(dispatch, "TodoLists and tasks loaded")
-      todoListsData.data.map((el) => dispatch(asyncTasks.fetchTasks(el.id)))
-      return { tlData: todoListsData.data }
-    } catch (e) {
-      return networkErrorHandler(dispatch, e, rejectWithValue)
-    }
+    const response = await todolist_API.getTodoLists()
+    successHandler(dispatch, "TodoLists and tasks loaded")
+    response.data.map((el) => dispatch(asyncTasks.fetchTasks(el.id)))
+    return { tlData: response.data }
   },
 )
 const fetchDeleteTodoList = createAppAsyncThunk<{ todoListId: string }, string>(
   `${todolistSlice.name}/deleteTodoList`,
   async (todoListId, { dispatch, rejectWithValue }) => {
-    try {
-      dispatch(
-        todoListActions.changeTodoListEntityStatusAC({
-          todoListId,
-          status: "loading",
-        }),
-      )
-      await todolist_API.deleteTodoList(todoListId)
+    dispatch(
+      todoListActions.changeTodoListEntityStatusAC({
+        todoListId,
+        status: "loading",
+      }),
+    )
+    const response = await todolist_API.deleteTodoList(todoListId)
+    if (response.data.resultCode === ResultCode.success) {
       successHandler(dispatch, "TodoLists was deleted")
       return { todoListId }
-    } catch (e) {
-      return networkErrorHandler(dispatch, e, rejectWithValue)
+    } else {
+      return rejectWithValue(response.data)
     }
   },
 )
 export const fetchAddNewTodoList = createAppAsyncThunk<{ newTL: T_TodoListPost }, string>(
   `${todolistSlice.name}/createTodoList`,
   async (title, { dispatch, rejectWithValue }) => {
-    try {
-      const newTL = await todolist_API.createTodoList(title)
-      if (newTL.data.resultCode === ResultCode.success) {
-        successHandler(dispatch, "TodoLists was added")
-        return { newTL: newTL.data.data }
-      } else {
-        return localErrorHandler(dispatch, newTL, rejectWithValue, false)
-      }
-    } catch (e) {
-      return networkErrorHandler(dispatch, e, rejectWithValue)
+    const response = await todolist_API.createTodoList(title)
+    if (response.data.resultCode === ResultCode.success) {
+      successHandler(dispatch, "TodoLists was added")
+      return { newTL: response.data.data }
+    } else {
+      return rejectWithValue(response.data)
     }
   },
 )
@@ -122,16 +112,12 @@ const fetchUpdateTodoListTitle = createAppAsyncThunk<
 >(
   `${todolistSlice.name}/editTodoListTitle`,
   async ({ todoListId, title }, { dispatch, rejectWithValue }) => {
-    try {
-      let updateTL = await todolist_API.updateTodoList(todoListId, title)
-      if (updateTL.data.resultCode === ResultCode.success) {
-        successHandler(dispatch, "TodoLists was edited")
-        return { todoListId, newTitleTL: title }
-      } else {
-        return localErrorHandler(dispatch, updateTL, rejectWithValue)
-      }
-    } catch (e) {
-      return networkErrorHandler(dispatch, e, rejectWithValue)
+    let response = await todolist_API.updateTodoList(todoListId, title)
+    if (response.data.resultCode === ResultCode.success) {
+      successHandler(dispatch, "TodoLists was edited")
+      return { todoListId, newTitleTL: title }
+    } else {
+      return rejectWithValue(response.data)
     }
   },
 )

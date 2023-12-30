@@ -1,4 +1,5 @@
 import { createSlice, isFulfilled, isPending, isRejected, PayloadAction } from "@reduxjs/toolkit"
+import { asyncTodoList } from "features/TodoListLists/model"
 
 export type T_ResponseStatus = "idle" | "loading" | "succeeded" | "failed"
 
@@ -31,15 +32,30 @@ const appSlice = createSlice({
       .addMatcher(isPending, (state) => {
         state.status = "loading"
       })
-      .addMatcher(isFulfilled, (state) => {
+      .addMatcher(isFulfilled, (state, action) => {
         state.status = "succeeded"
       })
-      .addMatcher(isRejected, (state) => {
+      .addMatcher(isRejected, (state, action) => {
         state.status = "failed"
+        if (action.payload) {
+          if (action.type === asyncTodoList.fetchAddNewTodoList.rejected.type) return
+          const rejectedAction = action as T_RejectAction
+          state.informMessage = rejectedAction.payload?.messages[0] || "Some error occurred"
+        } else {
+          state.informMessage = action.error?.message || "Some error occurred"
+        }
       })
   },
 })
-
+type T_RejectAction = {
+  type: string
+  payload?: {
+    messages: string[]
+  }
+  error?: {
+    message: string
+  }
+}
 export const appActions = appSlice.actions
 
 export const appReducer = appSlice.reducer

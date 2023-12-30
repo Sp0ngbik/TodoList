@@ -33,11 +33,9 @@ export type T_TasksCreateResponse = {
 }
 
 export type T_CreateTask = {
-  data: {
-    item: T_TaskResponseItems
-    resultCode: number
-    messages: string | []
-  }
+  item: T_TaskResponseItems
+  resultCode: number
+  messages: string | []
 }
 
 export type T_TasksResponse<D = {}> = {
@@ -59,6 +57,9 @@ export const task_API = {
     })
   },
   updateTask(todolistId: string, taskId: string, model: T_UpdateTask) {
-    return instanceAxios.put<T_TasksResponse<T_CreateTask>>(`/todo-lists/${todolistId}/tasks/${taskId}`, model)
+    return instanceAxios.put<T_TasksResponse<T_CreateTask>>(
+      `/todo-lists/${todolistId}/tasks/${taskId}`,
+      model,
+    )
   },
 }
