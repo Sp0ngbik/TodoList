@@ -1,9 +1,13 @@
 import React, { useCallback, useEffect } from "react"
 import AddNewItem from "common/components/AddNewTodo/AddNewItem"
 import { Navigate } from "react-router-dom"
-import { TodoList } from "../TodoList/TodoLists"
-import style from "./todoLists.module.css"
-import { asyncTodoList, fetchAddNewTodoList, todoListSelector } from "features/TodoListLists/model"
+import { TodoList } from "features/TodoListLists/TodoList/TodoLists"
+import style from "features/TodoListLists/ui/todoLists.module.css"
+import {
+  asyncTodoList,
+  fetchAddNewTodoList,
+  todoListSelector,
+} from "features/TodoListLists/model/todolist"
 import { isLoggedInSelector } from "features/Login/model/authSelectors"
 import { asyncAuthActions } from "features/Login/model/authSlice"
 import { useActions, useAppSelector } from "common/hooks/redux_hooks"

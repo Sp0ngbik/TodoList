@@ -1,8 +1,9 @@
 import { createSlice, isFulfilled } from "@reduxjs/toolkit"
 import { appActions } from "app/model/appSlice"
-import { auth_API, T_AuthorizeData } from "../api/auth_API"
+import { auth_API } from "../api/auth_API"
 import { createAppAsyncThunk } from "common/hooks/redux_hooks/createAppAsyncThunk"
 import { ResultCode } from "common/enums/enums"
+import { T_AuthorizeData } from "features/Login/api/authApi.types"
 
 export const authSlice = createSlice({
   name: "auth",

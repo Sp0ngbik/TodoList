@@ -1,31 +1,14 @@
-import { instanceAxios } from "../../TodoListLists/api/todolist_API"
-
-export type T_AuthResponse<T = {}> = {
-  data: T
-  messages: string[]
-  fieldsErrors: string[]
-  resultCode: number
-}
-export type T_AuthMeData = {
-  id: number
-  login: string
-  email: string
-}
-
-export type T_AuthorizeData = {
-  email: string
-  password: string
-  rememberMe: boolean
-}
+import { axiosInstance } from "common/utils/axiosInstance"
+import { T_AuthMeData, T_AuthorizeData, T_AuthResponse } from "./authApi.types"
 
 export const auth_API = {
   authMe: () => {
-    return instanceAxios.get<T_AuthResponse<T_AuthMeData>>("auth/me")
+    return axiosInstance.get<T_AuthResponse<T_AuthMeData>>("auth/me")
   },
   loginMe: (data: T_AuthorizeData) => {
-    return instanceAxios.post<T_AuthResponse<{ userId: number }>>("/auth/login", data)
+    return axiosInstance.post<T_AuthResponse<{ userId: number }>>("/auth/login", data)
   },
   logOutMe: () => {
-    return instanceAxios.delete<T_AuthResponse>("/auth/login")
+    return axiosInstance.delete<T_AuthResponse>("/auth/login")
   },
 }

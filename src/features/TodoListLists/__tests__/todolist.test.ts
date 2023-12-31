@@ -1,5 +1,10 @@
-import { asyncTodoList, T_TodoListInitial, todoListReducer, todoListActions } from "../model/todoListSlice"
-import { T_TodoListPost } from "../api/todolist_API"
+import {
+  asyncTodoList,
+  T_TodoListInitial,
+  todoListReducer,
+  todoListActions,
+} from "features/TodoListLists/model/todolist/todoListSlice"
+import { T_TodoListPost } from "features/TodoListLists/api/todolist/todolist_API"
 
 let todoListId1: string
 let todoListId2: string
@@ -8,8 +13,22 @@ beforeEach(() => {
   todoListId1 = "todoListId1"
   todoListId2 = "todoListId2"
   todoLists = [
-    { id: todoListId1, filter: "all", entityStatus: "idle", addedDate: "", order: 2, title: "TodoList1" },
-    { id: todoListId2, filter: "all", entityStatus: "idle", addedDate: "", order: 2, title: "TodoList2" },
+    {
+      id: todoListId1,
+      filter: "all",
+      entityStatus: "idle",
+      addedDate: "",
+      order: 2,
+      title: "TodoList1",
+    },
+    {
+      id: todoListId2,
+      filter: "all",
+      entityStatus: "idle",
+      addedDate: "",
+      order: 2,
+      title: "TodoList2",
+    },
   ]
 })
 
@@ -26,7 +45,11 @@ test("todoList should received", () => {
 test("todolist should be deleted", () => {
   const endState = todoListReducer(
     todoLists,
-    asyncTodoList.fetchDeleteTodoList.fulfilled({ todoListId: todoListId1 }, "delete todo", todoListId1),
+    asyncTodoList.fetchDeleteTodoList.fulfilled(
+      { todoListId: todoListId1 },
+      "delete todo",
+      todoListId1,
+    ),
   )
 
   expect(endState[0].id).toBe(todoListId2)

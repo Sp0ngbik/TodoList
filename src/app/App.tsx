@@ -5,7 +5,7 @@ import { Notification } from "common/helpers/notification/Notification"
 import { Route, Routes } from "react-router-dom"
 import { appInitialize } from "app/model/appSelectors"
 import { asyncAuthActions } from "features/Login/model/authSlice"
-import TodoListLists from "features/TodoListLists/ui/TodoListLists/TodoListLists"
+import TodoListLists from "features/TodoListLists/ui/TodoListLists"
 import Login from "features/Login/ui/Login"
 
 const App = React.memo(() => {

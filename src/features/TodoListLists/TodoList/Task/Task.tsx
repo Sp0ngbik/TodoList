@@ -1,12 +1,12 @@
 import React, { FC } from "react"
-import style from "./tasks.module.css"
-import { T_ResponseStatus } from "app/model/appSlice"
+import style from "features/TodoListLists/TodoList/Task/tasks.module.css"
 import { TasksStatus } from "common/enums/enums"
-import { asyncTasks } from "../../model/tasksSlice"
+import { asyncTasks } from "features/TodoListLists/model/tasks/tasksSlice"
 import { EditableSpan } from "common/components/EdditableSpan"
 import { useActions } from "common/hooks/redux_hooks"
+import { T_ResponseStatus } from "app/types"
 
-type T_Task = {
+type Props = {
   id: string
   title: string
   todoListId: string
@@ -15,7 +15,7 @@ type T_Task = {
   isEntityTodoListLoading: boolean
 }
 
-export const Task: FC<T_Task> = ({
+export const Task: FC<Props> = ({
   title,
   id,
   todoListId,

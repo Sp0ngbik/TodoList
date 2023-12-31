@@ -1,5 +1,10 @@
-import { asyncTasks, T_TasksReducer, tasksActions, tasksReducer } from "../model/tasksSlice"
-import { T_CreateTask } from "../api/task_API"
+import {
+  asyncTasks,
+  T_TasksReducer,
+  tasksActions,
+  tasksReducer,
+} from "features/TodoListLists/model/tasks/tasksSlice"
+import { T_CreateTask } from "features/TodoListLists/api/tasks/task_API"
 import { TasksStatus } from "common/enums/enums"
 
 let taskId1: string
@@ -91,10 +96,14 @@ test("should add task to todolist", () => {
 test("task should delete from todolist", () => {
   const endState = tasksReducer(
     tasks,
-    asyncTasks.fetchDeleteTask.fulfilled({ todoListId: todoListId1, taskId: taskId1 }, "task should remove", {
-      todoListId: todoListId1,
-      taskId: taskId1,
-    }),
+    asyncTasks.fetchDeleteTask.fulfilled(
+      { todoListId: todoListId1, taskId: taskId1 },
+      "task should remove",
+      {
+        todoListId: todoListId1,
+        taskId: taskId1,
+      },
+    ),
   )
   expect(endState[todoListId1].length).toBe(1)
   expect(endState[todoListId1][0].id).toBe(taskId2)

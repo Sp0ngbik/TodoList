@@ -1,10 +1,11 @@
-import { T_CreateTask, T_TaskResponseItems, T_UpdateTask, task_API } from "../api/task_API"
-import { T_ResponseStatus } from "app/model/appSlice"
 import { successHandler } from "common/utils/successHandler"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { asyncTodoList } from "./todoListSlice"
+import { asyncTodoList } from "features/TodoListLists/model/todolist/todoListSlice"
 import { createAppAsyncThunk } from "common/hooks/redux_hooks/createAppAsyncThunk"
 import { ResultCode, TasksStatus } from "common/enums/enums"
+import { T_ResponseStatus } from "app/types"
+import { T_CreateTask, T_TaskResponseItems, T_UpdateTask } from "features/TodoListLists/api/tasks"
+import { task_API } from "features/TodoListLists/api/tasks/task_API"
 
 type T_PutTask = {
   title?: string

@@ -1,10 +1,11 @@
-import { T_TodoListCreate, T_TodoListPost, todolist_API } from "../api/todolist_API"
-import { T_ResponseStatus } from "app/model/appSlice"
+import { todolist_API } from "features/TodoListLists/api/todolist/todolist_API"
 import { successHandler } from "common/utils/successHandler"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { asyncTasks } from "./tasksSlice"
+import { asyncTasks } from "features/TodoListLists/model/tasks/tasksSlice"
 import { createAppAsyncThunk } from "common/hooks/redux_hooks/createAppAsyncThunk"
 import { ResultCode } from "common/enums/enums"
+import { T_ResponseStatus } from "app/types"
+import { T_TodoListCreate, T_TodoListPost } from "features/TodoListLists/api/todolist"
 
 export type T_FilterValues = "all" | "completed" | "inProgress"
 

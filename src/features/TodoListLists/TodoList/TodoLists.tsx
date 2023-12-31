@@ -1,27 +1,27 @@
 import React from "react"
-import style from "./todoList.module.css"
-import { T_TaskResponseItems } from "../../api/task_API"
-import { T_ResponseStatus } from "app/model/appSlice"
+import style from "features/TodoListLists/TodoList/todoList.module.css"
 import AddNewItem from "common/components/AddNewTodo/AddNewItem"
 import {
   asyncTodoList,
-  fetchCreateTask,
-  selectTasksForTodos,
   T_FilterValues,
   todoListActions,
-} from "features/TodoListLists/model"
-import { Task } from "../Task"
+} from "features/TodoListLists/model/todolist"
+import { Task } from "features/TodoListLists/TodoList/Task"
 import { EditableSpan } from "common/components/EdditableSpan"
 import { useActions, useAppSelector } from "common/hooks/redux_hooks"
+import { T_ResponseStatus } from "app/types"
+import { T_TaskResponseItems } from "features/TodoListLists/api/tasks"
+import { selectTasksForTodos } from "features/TodoListLists/model/tasks/tasksSelectors"
+import { fetchCreateTask } from "features/TodoListLists/model/tasks/tasksSlice"
 
-type T_TodoListsProps = {
+type Props = {
   title: string
   todoListId: string
   filter: T_FilterValues
   entityStatus: T_ResponseStatus
 }
 
-export const TodoList: React.FC<T_TodoListsProps> = React.memo(
+export const TodoList: React.FC<Props> = React.memo(
   ({ title, todoListId, filter, entityStatus }) => {
     const { fetchDeleteTodoList, fetchUpdateTodoListTitle } = useActions(asyncTodoList)
     const { changeTodoListFilterAC } = useActions(todoListActions)

@@ -2,13 +2,13 @@ import React, { FC, useState } from "react"
 import style from "common/components/EdditableSpan/editableSpan.module.css"
 import { useFormik } from "formik"
 
-type T_EditableSpan = {
+type Props = {
   callbackFunc: (param: { title: string }) => void
   prevTitle: string
   disabled: boolean
 }
 
-export const EditableSpan: FC<T_EditableSpan> = ({ callbackFunc, prevTitle, disabled }) => {
+export const EditableSpan: FC<Props> = ({ callbackFunc, prevTitle, disabled }) => {
   const [editMode, setEditMode] = useState(false)
   const onActivateEditMode = () => {
     disabled ? setEditMode(false) : setEditMode(true)

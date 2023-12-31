@@ -2,14 +2,14 @@ import React, { FC } from "react"
 import style from "common/components/AddNewTodo/addNewTodo.module.css"
 import { FormikHelpers, useFormik } from "formik"
 import { useAppDispatch } from "common/hooks/redux_hooks/useAction"
-import { fetchAddNewTodoList } from "features/TodoListLists/model/todoListSlice"
-import { fetchCreateTask } from "features/TodoListLists/model/tasksSlice"
+import { fetchAddNewTodoList } from "features/TodoListLists/model/todolist/todoListSlice"
+import { fetchCreateTask } from "features/TodoListLists/model/tasks/tasksSlice"
 
-type T_AddNewItem = {
+type Props = {
   callback: Function
 }
 
-const AddNewItem: FC<T_AddNewItem> = ({ callback }) => {
+const AddNewItem: FC<Props> = ({ callback }) => {
   const dispatch = useAppDispatch()
   const addItemFormik = useFormik({
     initialValues: {
